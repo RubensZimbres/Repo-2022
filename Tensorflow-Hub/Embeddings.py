@@ -6,7 +6,7 @@ import tensorflow_hub as hub
 import tensorflow_text as text  # Imports TF ops for preprocessing.
 
 
-BERT_MODEL = "https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-2_H-768_A-12/2"
+BERT_MODEL = "https://tfhub.dev/tensorflow/bert_multi_cased_L-12_H-768_A-12/4"
 
 PREPROCESS_MODEL = "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3"
 
