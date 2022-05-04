@@ -25,6 +25,8 @@ print(outputs["pooled_output"].shape)
 
 print(outputs["sequence_output"].shape)
 
+import matplotlib.pyplot as plt
+
 def plot_similarity(features, labels):
   """Plot a similarity matrix of the embeddings."""
   cos_sim = pairwise.cosine_similarity(features)
@@ -36,8 +38,8 @@ def plot_similarity(features, labels):
   g.tick_params(labelright=True, labelleft=False)
   g.set_yticklabels(labels, rotation=0)
   g.set_title("Semantic Textual Similarity")
-
-
+  plt.show()
+  
 plot_similarity(outputs["pooled_output"], sentences)
 
 
