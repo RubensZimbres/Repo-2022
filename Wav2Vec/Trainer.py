@@ -251,12 +251,14 @@ model = Wav2Vec2ForCTC.from_pretrained(
 
 #model.freeze_feature_extractor()
 
+model
+
 from transformers import TrainingArguments
 
 training_args = TrainingArguments(
   output_dir="/home/theone/out/hugging-xlsr/wav2vec2-large-xlsr-PTBR-demo",
   group_by_length=True,
-  per_device_train_batch_size=8,
+  per_device_train_batch_size=4,
   gradient_accumulation_steps=2,
   evaluation_strategy="steps",
   num_train_epochs=16,
@@ -283,6 +285,10 @@ trainer = Trainer(
 
 end=time()
 print(end-start)
+
+torch.cuda.empty_cache()
+import gc
+gc.collect()
 
 trainer.train()
 
