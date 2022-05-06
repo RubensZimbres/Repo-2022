@@ -39,3 +39,5 @@ def evaluate(batch):
 result = test_dataset.map(evaluate, batched=True, batch_size=8)
 
 print("WER: {:2f}".format(100 * wer.compute(predictions=result["pred_strings"], references=result["sentence"])))
+
+#Test Result(wer): 19.30 %
