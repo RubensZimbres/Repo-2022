@@ -237,7 +237,7 @@ notebook_login()
 
 
 model = Wav2Vec2ForCTC.from_pretrained(
-    "facebook/wav2vec2-base",
+    "facebook/wav2vec2-large-xlsr-53,"  #"facebook/wav2vec2-base",
     attention_dropout=0.15,
     hidden_dropout=0.15,
     feat_proj_dropout=0.0,
