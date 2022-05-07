@@ -87,6 +87,8 @@ def speech_file_to_array_fn(batch):
     batch["target_text"] = batch["sentence"]
     return batch
 
+### 2:00
+
 common_voice_train = common_voice_train.map(speech_file_to_array_fn, remove_columns=common_voice_train.column_names)
 common_voice_test = common_voice_test.map(speech_file_to_array_fn, remove_columns=common_voice_test.column_names)
 
@@ -98,6 +100,9 @@ def resample(batch):
     batch["speech"] = librosa.resample(np.asarray(batch["speech"]), 48_000, 16_000)
     batch["sampling_rate"] = 16_000
     return batch
+
+
+### 10:00
 
 common_voice_train = common_voice_train.map(resample, num_proc=4)
 common_voice_test = common_voice_test.map(resample, num_proc=4)
@@ -217,7 +222,7 @@ def compute_metrics(pred):
 from transformers import Wav2Vec2ForCTC
 
 model = Wav2Vec2ForCTC.from_pretrained(
-    "facebook/wav2vec2-large-xlsr-53",
+    "facebook/wav2vec2-base", #"facebook/wav2vec2-large-xlsr-53",
     attention_dropout=0.1,
     hidden_dropout=0.1,
     feat_proj_dropout=0.0,
@@ -237,16 +242,18 @@ training_args = TrainingArguments(
   output_dir="/home/theone/other_models/Wav2Vec/out/wav2vec2-large-xlsr-PTBR-demo",
   group_by_length=True,
   per_device_train_batch_size=4,
-  gradient_accumulation_steps=1,
   evaluation_strategy="steps",
-  num_train_epochs=16,
+  num_train_epochs=30,
   fp16=True,
+  gradient_checkpointing=True,
   save_steps=100,
   eval_steps=800,
-  logging_steps=200,
+  logging_steps=500,
   learning_rate=1e-4,
-  warmup_steps=200,
+  weight_decay=0.005,
+  warmup_steps=20,
   save_total_limit=10,
+  push_to_hub=False,
 )
 
 from transformers import Trainer
