@@ -1,18 +1,43 @@
+# source /home/anaconda3/bin/activate torch
+
+#! pip install wandb
+
 from datasets import load_dataset, load_metric
+from transformers import Trainer
+from transformers import TrainingArguments
+from transformers import Wav2Vec2ForCTC
+
+import torch
+import numpy as np
+import random
+import librosa
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Union
+from datasets import ClassLabel
+import random
+import pandas as pd
+from transformers import Wav2Vec2CTCTokenizer
+from transformers import Wav2Vec2FeatureExtractor
+from transformers import Wav2Vec2Processor
+import torchaudio
+import re
+import json
+
+try:
+    import wandb
+    from wandb import init, log, join  # test that these are available
+except ImportError:
+       print("msg")
 
 common_voice_train = load_dataset("common_voice", "pt", split="train+validation")
 common_voice_test = load_dataset("common_voice", "pt", split="test")
 
-common_voice_train = common_voice_train.remove_columns(["accent", "age", "client_id", "down_votes", "gender", "locale", "segment", "up_votes"])
-common_voice_test = common_voice_test.remove_columns(["accent", "age", "client_id", "down_votes", "gender", "locale", "segment", "up_votes"])
+common_voice_train = common_voice_train.remove_columns(["accent", "client_id", "down_votes", "gender", "age","locale", "segment", "up_votes"]) #"gender", "age", 
+common_voice_test = common_voice_test.remove_columns(["accent", "client_id", "down_votes", "gender", "age","locale", "segment", "up_votes"]) #"gender", "age", 
 
 print(common_voice_train)
 
 
-from datasets import ClassLabel
-import random
-import pandas as pd
-from IPython.display import display, HTML
 
 def show_random_elements(dataset, num_examples=10):
     assert num_examples <= len(dataset), "Can't pick more elements than there are in the dataset."
@@ -28,7 +53,6 @@ def show_random_elements(dataset, num_examples=10):
 
 show_random_elements(common_voice_train)
 
-import re
 
 def remove_special_characters(batch):
     batch["sentence"] = re.sub(r'[\W\s]', ' ', batch["sentence"]).lower() + " "
@@ -52,33 +76,30 @@ vocab_list = vocab_list = ['a','b','c','d','e','f','g','h','i','j','l','m','n','
 vocab_dict = {v: k for k, v in enumerate(vocab_list)}
 print(vocab_dict)
 
+vocab_dict["|"] = vocab_dict[" "]
+del vocab_dict[" "]
 vocab_dict["[UNK]"] = len(vocab_dict)
 vocab_dict["[PAD]"] = len(vocab_dict)
 print(len(vocab_dict))
 
-import json
 with open('vocab.json', 'w') as vocab_file:
     json.dump(vocab_dict, vocab_file)
 
-from transformers import Wav2Vec2CTCTokenizer
 
 tokenizer = Wav2Vec2CTCTokenizer("./vocab.json", unk_token="[UNK]", pad_token="[PAD]", word_delimiter_token="|")
 
-from transformers import Wav2Vec2FeatureExtractor
 
 feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000, padding_value=0.0, do_normalize=True, return_attention_mask=True)
 
-from transformers import Wav2Vec2Processor
 
 processor = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)
 
-processor.save_pretrained("/home/rubens/hugging-xlsr/wav2vec2-large-xlsr-PTBR-demo")
+processor.save_pretrained("/home/theone/other_models/Wav2Vec/hugging-xlsr/wav2vec2-large-xlsr-PTBR-demo")
 
-output_dir="/home/rubens/hugging-xlsr/wav2vec2-large-xlsr-PTBR-demo"
+output_dir="/home/theone/other_models/Wav2Vec/hugging-xlsr/wav2vec2-large-xlsr-PTBR-demo"
 
 print(common_voice_train[0])
 
-import torchaudio
 
 def speech_file_to_array_fn(batch):
     speech_array, sampling_rate = torchaudio.load(batch["path"])
@@ -87,14 +108,11 @@ def speech_file_to_array_fn(batch):
     batch["target_text"] = batch["sentence"]
     return batch
 
-### 2:00
+### 3:00
 
 common_voice_train = common_voice_train.map(speech_file_to_array_fn, remove_columns=common_voice_train.column_names)
 common_voice_test = common_voice_test.map(speech_file_to_array_fn, remove_columns=common_voice_test.column_names)
 
-
-import librosa
-import numpy as np
 
 def resample(batch):
     batch["speech"] = librosa.resample(np.asarray(batch["speech"]), 48_000, 16_000)
@@ -102,18 +120,17 @@ def resample(batch):
     return batch
 
 
-### 10:00
+### 14:00 ###############################
 
 common_voice_train = common_voice_train.map(resample, num_proc=4)
 common_voice_test = common_voice_test.map(resample, num_proc=4)
 
+#print(common_voice_train[0])
 
-import IPython.display as ipd
-import numpy as np
-import random
+
 
 rand_int = random.randint(0, len(common_voice_train))
-ipd.Audio(data=np.asarray(common_voice_train[rand_int]["speech"]), autoplay=True, rate=16000)
+#ipd.Audio(data=np.asarray(common_voice_train[rand_int]["speech"]), autoplay=True, rate=16000)
 
 rand_int = random.randint(0, len(common_voice_train))
 
@@ -132,15 +149,12 @@ def prepare_dataset(batch):
         batch["labels"] = processor(batch["target_text"]).input_ids
     return batch
 
+############# 1:20 
 
 common_voice_train = common_voice_train.map(prepare_dataset, remove_columns=common_voice_train.column_names, batch_size=8, num_proc=4, batched=True)
 common_voice_test = common_voice_test.map(prepare_dataset, remove_columns=common_voice_test.column_names, batch_size=8, num_proc=4, batched=True)
 
 
-import torch
-
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union
 
 @dataclass
 class DataCollatorCTCWithPadding:
@@ -219,7 +233,6 @@ def compute_metrics(pred):
 
     return {"wer": wer}
 
-from transformers import Wav2Vec2ForCTC
 
 model = Wav2Vec2ForCTC.from_pretrained(
     "facebook/wav2vec2-base", #"facebook/wav2vec2-large-xlsr-53",
@@ -234,9 +247,9 @@ model = Wav2Vec2ForCTC.from_pretrained(
     vocab_size=len(processor.tokenizer)
 )
 
-model.freeze_feature_extractor()
 
-from transformers import TrainingArguments
+#model.freeze_feature_extractor()
+
 
 training_args = TrainingArguments(
   output_dir="/home/theone/other_models/Wav2Vec/out/wav2vec2-large-xlsr-PTBR-demo",
@@ -256,8 +269,8 @@ training_args = TrainingArguments(
   push_to_hub=False,
 )
 
-from transformers import Trainer
-
+## Old transformers do not send dataset to cuda
+## ERRO AQUI
 trainer = Trainer(
     model=model,
     data_collator=data_collator,
