@@ -1,0 +1,2 @@
+base = 320 MB
+large = 1.18GB
