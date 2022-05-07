@@ -1,6 +1,4 @@
 from datasets import load_dataset, load_metric
-from time import time
-start=time()
 
 common_voice_train = load_dataset("common_voice", "pt", split="train+validation")
 common_voice_test = load_dataset("common_voice", "pt", split="test")
@@ -15,7 +13,6 @@ from datasets import ClassLabel
 import random
 import pandas as pd
 from IPython.display import display, HTML
-import re
 
 def show_random_elements(dataset, num_examples=10):
     assert num_examples <= len(dataset), "Can't pick more elements than there are in the dataset."
@@ -34,7 +31,7 @@ show_random_elements(common_voice_train)
 import re
 
 def remove_special_characters(batch):
-    batch["sentence"] = re.sub(r'[\W\s]', ' ', batch["sentence"])
+    batch["sentence"] = re.sub(r'[\W\s]', ' ', batch["sentence"]).lower() + " "
     return batch
 
 common_voice_train = common_voice_train.map(remove_special_characters)
@@ -47,16 +44,14 @@ def extract_all_chars(batch):
   vocab = list(set(all_text))
   return {"vocab": [vocab], "all_text": [all_text]}
 
-vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=1, keep_in_memory=True, remove_columns=common_voice_train.column_names)
-vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=1, keep_in_memory=True, remove_columns=common_voice_test.column_names)
+vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True, remove_columns=common_voice_train.column_names)
+vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True, remove_columns=common_voice_test.column_names)
 
-vocab_list = list(set(vocab_train["vocab"][0]) | set(vocab_test["vocab"][0]))
+vocab_list = vocab_list = ['a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô']
 
 vocab_dict = {v: k for k, v in enumerate(vocab_list)}
 print(vocab_dict)
 
-vocab_dict["|"] = vocab_dict[" "]
-del vocab_dict[" "]
 vocab_dict["[UNK]"] = len(vocab_dict)
 vocab_dict["[PAD]"] = len(vocab_dict)
 print(len(vocab_dict))
@@ -75,13 +70,11 @@ feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000
 
 from transformers import Wav2Vec2Processor
 
-## ATE AQUI OK
-
 processor = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)
 
-processor.save_pretrained("/home/theone/other_models/Wav2Vec/hugging-xlsr/wav2vec2-large-xlsr-PTBR-demo")
+processor.save_pretrained("/home/rubens/hugging-xlsr/wav2vec2-large-xlsr-PTBR-demo")
 
-output_dir="/home/theone/other_models/Wav2Vec/out/wav2vec2-large-xlsr-PTBR-demo"
+output_dir="/home/rubens/hugging-xlsr/wav2vec2-large-xlsr-PTBR-demo"
 
 print(common_voice_train[0])
 
@@ -93,8 +86,6 @@ def speech_file_to_array_fn(batch):
     batch["sampling_rate"] = sampling_rate
     batch["target_text"] = batch["sentence"]
     return batch
-
-### AQUI DEMORA
 
 common_voice_train = common_voice_train.map(speech_file_to_array_fn, remove_columns=common_voice_train.column_names)
 common_voice_test = common_voice_test.map(speech_file_to_array_fn, remove_columns=common_voice_test.column_names)
@@ -108,10 +99,7 @@ def resample(batch):
     batch["sampling_rate"] = 16_000
     return batch
 
-### AQUI DEMORA BASTANTE
-
 common_voice_train = common_voice_train.map(resample, num_proc=4)
-
 common_voice_test = common_voice_test.map(resample, num_proc=4)
 
 
@@ -139,11 +127,8 @@ def prepare_dataset(batch):
         batch["labels"] = processor(batch["target_text"]).input_ids
     return batch
 
-################################################################################################
-#### AQUI DEMORA PRA CACETE SEM CACHE
 
 common_voice_train = common_voice_train.map(prepare_dataset, remove_columns=common_voice_train.column_names, batch_size=8, num_proc=4, batched=True)
-
 common_voice_test = common_voice_test.map(prepare_dataset, remove_columns=common_voice_test.column_names, batch_size=8, num_proc=4, batched=True)
 
 
@@ -231,15 +216,10 @@ def compute_metrics(pred):
 
 from transformers import Wav2Vec2ForCTC
 
-from huggingface_hub import notebook_login
-
-notebook_login()
-
-
 model = Wav2Vec2ForCTC.from_pretrained(
-    "facebook/wav2vec2-large-xlsr-53,"  #"facebook/wav2vec2-base",
-    attention_dropout=0.15,
-    hidden_dropout=0.15,
+    "facebook/wav2vec2-large-xlsr-53",
+    attention_dropout=0.1,
+    hidden_dropout=0.1,
     feat_proj_dropout=0.0,
     mask_time_prob=0.05,
     layerdrop=0.1,
@@ -249,22 +229,20 @@ model = Wav2Vec2ForCTC.from_pretrained(
     vocab_size=len(processor.tokenizer)
 )
 
-#model.freeze_feature_extractor()
-
-model
+model.freeze_feature_extractor()
 
 from transformers import TrainingArguments
 
 training_args = TrainingArguments(
-  output_dir="/home/theone/out/hugging-xlsr/wav2vec2-large-xlsr-PTBR-demo",
+  output_dir="/home/theone/other_models/Wav2Vec/out/wav2vec2-large-xlsr-PTBR-demo",
   group_by_length=True,
   per_device_train_batch_size=4,
-  gradient_accumulation_steps=2,
+  gradient_accumulation_steps=1,
   evaluation_strategy="steps",
   num_train_epochs=16,
   fp16=True,
-  save_steps=200,
-  eval_steps=200,
+  save_steps=100,
+  eval_steps=800,
   logging_steps=200,
   learning_rate=1e-4,
   warmup_steps=200,
@@ -283,13 +261,4 @@ trainer = Trainer(
     tokenizer=processor.feature_extractor,
 )
 
-end=time()
-print(end-start)
-
-torch.cuda.empty_cache()
-import gc
-gc.collect()
-
 trainer.train()
-
-trainer.push_to_hub()
