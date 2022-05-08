@@ -24,6 +24,8 @@ import wandb
 import os
 
 os.environ["WANDB_SILENT"] = "true"
+os.environ["WANDB_DISABLED"] = "true"
+
 try:
     import wandb
     from wandb import init, log, join  # test that these are available
@@ -92,7 +94,6 @@ tokenizer = Wav2Vec2CTCTokenizer("./vocab.json", unk_token="[UNK]", pad_token="[
 
 feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000, padding_value=0.0, do_normalize=True, return_attention_mask=True)
 
-
 processor = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)
 
 processor.save_pretrained("/home/theone/other_models/Wav2Vec/hugging-xlsr/wav2vec2-large-xlsr-PTBR-demo")
@@ -120,13 +121,14 @@ def resample(batch):
     batch["sampling_rate"] = 16_000
     return batch
 
-
 ### 14:00 ###############################
 
 common_voice_train = common_voice_train.map(resample, num_proc=4)
 common_voice_test = common_voice_test.map(resample, num_proc=4)
 
-#print(common_voice_train[0])
+show_random_elements(common_voice_train)
+
+common_voice_train[0]
 
 
 
@@ -154,7 +156,6 @@ def prepare_dataset(batch):
 
 common_voice_train = common_voice_train.map(prepare_dataset, remove_columns=common_voice_train.column_names, batch_size=8, num_proc=4, batched=True)
 common_voice_test = common_voice_test.map(prepare_dataset, remove_columns=common_voice_test.column_names, batch_size=8, num_proc=4, batched=True)
-
 
 
 @dataclass
@@ -234,38 +235,36 @@ def compute_metrics(pred):
 
     return {"wer": wer}
 
-
 model = Wav2Vec2ForCTC.from_pretrained(
-    "/home/theone/other_models/Wav2Vec/out/wav2vec2-large-xlsr-PTBR-demo/checkpoint-7000",#+LR 1e-03 #___#"facebook/wav2vec2-base"_LR 1e-04, #"facebook/wav2vec2-large-xlsr-53",
+    "facebook/wav2vec2-base", #LR 1e-03, #"facebook/wav2vec2-large-xlsr-53",
     attention_dropout=0.1,
     hidden_dropout=0.1,
     feat_proj_dropout=0.0,
     mask_time_prob=0.05,
     layerdrop=0.1,
-    #gradient_checkpointing=True,
+    gradient_checkpointing=True,
     ctc_loss_reduction="mean",
     pad_token_id=processor.tokenizer.pad_token_id,
     vocab_size=len(processor.tokenizer)
 )
 
 
-#model.freeze_feature_extractor()
+model.freeze_feature_extractor()
 
 
 training_args = TrainingArguments(
   output_dir="/home/theone/other_models/Wav2Vec/out/wav2vec2-large-xlsr-PTBR-demo",
   group_by_length=True,
-  per_device_train_batch_size=4,
+  per_device_train_batch_size=8,
+  gradient_accumulation_steps=2,
   evaluation_strategy="steps",
-  num_train_epochs=30,
+  num_train_epochs=16,
   fp16=True,
-  gradient_checkpointing=True,
   save_steps=500,
-  eval_steps=1000,
-  logging_steps=500,
-  learning_rate=1e-3,
-  weight_decay=0.005,
-  warmup_steps=20,
+  eval_steps=500,
+  logging_steps=200,
+  learning_rate=0.9e-4,
+  warmup_steps=200,
   save_total_limit=10,
   push_to_hub=False,
 )
@@ -282,3 +281,5 @@ trainer = Trainer(
 )
 
 trainer.train()
+
+# GOAL 4.8/8.2 WER
