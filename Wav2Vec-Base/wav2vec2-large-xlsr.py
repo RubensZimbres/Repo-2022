@@ -73,6 +73,8 @@ def extract_all_chars(batch):
   vocab = list(set(all_text))
   return {"vocab": [vocab], "all_text": [all_text]}
 
+# False
+
 vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=1, keep_in_memory=True, remove_columns=common_voice_train.column_names)
 vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=1, keep_in_memory=True, remove_columns=common_voice_test.column_names)
 
@@ -128,14 +130,12 @@ def resample(batch):
 common_voice_train = common_voice_train.map(resample, num_proc=4)
 common_voice_test = common_voice_test.map(resample, num_proc=4)
 
+
 show_random_elements(common_voice_train)
 
 common_voice_train[0]
 
 
-
-rand_int = random.randint(0, len(common_voice_train))
-#ipd.Audio(data=np.asarray(common_voice_train[rand_int]["speech"]), autoplay=True, rate=16000)
 
 rand_int = random.randint(0, len(common_voice_train))
 
