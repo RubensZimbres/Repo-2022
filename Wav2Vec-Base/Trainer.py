@@ -248,7 +248,7 @@ model = Wav2Vec2ForCTC.from_pretrained(
 )
 
 
-#model.freeze_feature_extractor()
+model.freeze_feature_extractor()
 
 
 training_args = TrainingArguments(
