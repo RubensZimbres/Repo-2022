@@ -1,5 +1,8 @@
 # Repo-2022  
   
+<b>Cellular Automaton</b>  
+In this Python file, I add a cellular automaton to a PyTorch kernel, add a residual layer to achieve 99.29% accuracy on test set in MNIST, results better than Robust Training in High Dimensions via Block Coordinate Geometric Median Descent", by Google AI and Amazon Search (2021).
+  
 <b>TF-Keras</b>  
 This folder has the code to customize ResNet Architecture via dictionary config, changing first two layers to receive multispectral images with 9 channels. Final layers are also added, for training and inference.  
   
