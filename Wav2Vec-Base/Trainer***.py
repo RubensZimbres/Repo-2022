@@ -76,7 +76,7 @@ def extract_all_chars(batch):
 vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True, remove_columns=common_voice_train.column_names)
 vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True, remove_columns=common_voice_test.column_names)
 
-vocab_list = vocab_list = ['a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô']
+vocab_list = vocab_list = [' ','a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô']
 
 vocab_dict = {v: k for k, v in enumerate(vocab_list)}
 print(vocab_dict)
@@ -87,14 +87,14 @@ vocab_dict["[UNK]"] = len(vocab_dict)
 vocab_dict["[PAD]"] = len(vocab_dict)
 print(len(vocab_dict))
 
-with open('vocab.json', 'w') as vocab_file:
+with open('/home/theone/other_models/Wav2Vec/vocab.json', 'w') as vocab_file:
     json.dump(vocab_dict, vocab_file)
 
 
-tokenizer = Wav2Vec2CTCTokenizer("./vocab.json", unk_token="[UNK]", pad_token="[PAD]", word_delimiter_token="|")
+tokenizer = Wav2Vec2CTCTokenizer("/home/theone/other_models/Wav2Vec/vocab.json", unk_token="[UNK]", pad_token="[PAD]", word_delimiter_token="|")
 
 
-feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000, padding_value=0.0, do_normalize=True, return_attention_mask=False)
+feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000, padding_value=0.0, do_normalize=True, return_attention_mask=True)
 
 processor = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)
 
@@ -244,7 +244,7 @@ model = Wav2Vec2ForCTC.from_pretrained(
     feat_proj_dropout=0.0,
     mask_time_prob=0.05,
     layerdrop=0.1,
-    gradient_checkpointing=True,
+#    gradient_checkpointing=True,
     ctc_loss_reduction="mean",
     pad_token_id=processor.tokenizer.pad_token_id,
     vocab_size=len(processor.tokenizer)
@@ -255,17 +255,18 @@ model.freeze_feature_extractor()
 
 
 training_args = TrainingArguments(
-  output_dir="/home/theone/other_models/Wav2Vec/out/wav2vec2-large-xlsr-PTBR-demo",
+  output_dir="/home/theone/other_models/Wav2Vec/out/Base",
   group_by_length=True,
-  per_device_train_batch_size=8,
+  per_device_train_batch_size=4,
   gradient_accumulation_steps=2,
   evaluation_strategy="steps",
-  num_train_epochs=16,
+  num_train_epochs=28,
   fp16=True,
   save_steps=500,
-  eval_steps=500,
+  eval_steps=2000,
   logging_steps=200,
-  learning_rate=0.9e-4,
+  learning_rate=0.9e-4, ### DIMINUIR LEARNING RATE 0.4
+  weight_decay=0.0002,
   warmup_steps=200,
   save_total_limit=10,
   push_to_hub=False,
@@ -283,5 +284,14 @@ trainer = Trainer(
 )
 
 trainer.train()
+
+
+len(list(model.named_modules()))
+#201 layers
+
+model_parameters = filter(lambda p: p.requires_grad, model.parameters())
+params = sum([np.prod(p.size()) for p in model_parameters])
+print(params)
+#90,195,103
 
 # GOAL 4.8/8.2 WER
