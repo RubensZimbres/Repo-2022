@@ -68,24 +68,23 @@ def extract_all_chars(batch):
   vocab = list(set(all_text))
   return {"vocab": [vocab], "all_text": [all_text]}
 
-vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True)
 
 vocab_list = vocab_list = ['a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô']
 
 vocab_dict = {v: k for k, v in enumerate(vocab_list)}
 print(vocab_dict)
 
-vocab_dict["|"] = vocab_dict[" "]
-del vocab_dict[" "]
-vocab_dict["[UNK]"] = len(vocab_dict)
-vocab_dict["[PAD]"] = len(vocab_dict)
-print(len(vocab_dict))
+#vocab_dict["|"] = vocab_dict[" "]
+#del vocab_dict[" "]
+#vocab_dict["[UNK]"] = len(vocab_dict)
+#vocab_dict["[PAD]"] = len(vocab_dict)
+#print(len(vocab_dict))
 
 with open('vocab.json', 'w') as vocab_file:
     json.dump(vocab_dict, vocab_file)
 
 
-tokenizer = Wav2Vec2CTCTokenizer("./vocab.json", unk_token="[UNK]", pad_token="[PAD]", word_delimiter_token="|")
+tokenizer = Wav2Vec2CTCTokenizer("./vocab.json", unk_token=" ",word_delimiter_token=" ") #unk_token="[UNK], pad_token="[PAD]"",
 
 
 feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000, padding_value=0.0, do_normalize=True, return_attention_mask=True)
@@ -224,3 +223,6 @@ def evaluate(batch):
 result = common_voice_test.map(evaluate, batched=True, batch_size=8)
 
 print("WER: {:2f}".format(100 * wer_metric.compute(predictions=result["pred_strings"], references=result["sentence"])))
+
+result["sentence"][-2]
+result["pred_strings"][-2]
