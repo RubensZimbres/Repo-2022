@@ -80,7 +80,7 @@ print(vocab_dict)
 #vocab_dict["[PAD]"] = len(vocab_dict)
 #print(len(vocab_dict))
 
-with open('vocab.json', 'w') as vocab_file:
+with open('/home/theone/other_models/Wav2Vec/vocab.json', 'w') as vocab_file:
     json.dump(vocab_dict, vocab_file)
 
 
