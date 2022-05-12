@@ -1,5 +1,9 @@
 # source /home/anaconda3/bin/activate torch
 
+# pip install wandb
+
+# source /home/anaconda3/bin/activate torch
+
 from datasets import load_dataset, load_metric
 from transformers import Trainer
 from transformers import TrainingArguments
@@ -78,7 +82,7 @@ def extract_all_chars(batch):
 vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=1, keep_in_memory=True, remove_columns=common_voice_train.column_names)
 vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=1, keep_in_memory=True, remove_columns=common_voice_test.column_names)
 
-vocab_list = vocab_list = [' ','a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô']
+vocab_list = vocab_list = [' ','a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô','ç','ã','õ']
 
 vocab_dict = {v: k for k, v in enumerate(vocab_list)}
 print(vocab_dict)
@@ -133,7 +137,7 @@ common_voice_test = common_voice_test.map(resample, num_proc=4)
 
 show_random_elements(common_voice_train)
 
-common_voice_train[0]
+common_voice_train['input_values']
 
 
 
@@ -159,6 +163,10 @@ def prepare_dataset(batch):
 common_voice_train = common_voice_train.map(prepare_dataset, remove_columns=common_voice_train.column_names, batch_size=1, num_proc=4, batched=True)
 common_voice_test = common_voice_test.map(prepare_dataset, remove_columns=common_voice_test.column_names, batch_size=1, num_proc=4, batched=True)
 
+############## 3:00
+
+max_input_length_in_sec = 5.0
+common_voice_train = common_voice_train.filter(lambda x: len(x) < max_input_length_in_sec * processor.feature_extractor.sampling_rate, input_columns=["input_values"])
 
 @dataclass
 class DataCollatorCTCWithPadding:
@@ -237,6 +245,10 @@ def compute_metrics(pred):
 
     return {"wer": wer}
 
+import gc
+gc.collect()
+torch.cuda.empty_cache()
+
 
 model = Wav2Vec2ForCTC.from_pretrained(
     "facebook/wav2vec2-large-xlsr-53",
@@ -245,7 +257,7 @@ model = Wav2Vec2ForCTC.from_pretrained(
     feat_proj_dropout=0.0,
     mask_time_prob=0.05,
     layerdrop=0.1,
-    gradient_checkpointing=True,
+#    gradient_checkpointing=True,
     ctc_loss_reduction="mean",
     pad_token_id=processor.tokenizer.pad_token_id,
     vocab_size=len(processor.tokenizer)
@@ -256,16 +268,16 @@ model.freeze_feature_extractor()
 
 
 training_args = TrainingArguments(
-  output_dir="/home/theone/other_models/Wav2Vec/out/wav2vec2-large-xlsr-PTBR-demo",
+  output_dir="/home/theone/other_models/Wav2Vec/out/wav2vec2-large-xlsr-PTBR",
   group_by_length=True,
   per_device_train_batch_size=1,
-  gradient_accumulation_steps=2,
+#  gradient_accumulation_steps=2,
   evaluation_strategy="steps",
   num_train_epochs=16,
   fp16=True,
   save_steps=500,
-  eval_steps=500,
-  logging_steps=200,
+  eval_steps=2000,
+  logging_steps=100,
   learning_rate=0.9e-4,
   warmup_steps=200,
   save_total_limit=10,
@@ -283,11 +295,16 @@ trainer = Trainer(
     tokenizer=processor.feature_extractor,
 )
 
-import gc
-gc.collect()
-torch.cuda.empty_cache()
 
 
 trainer.train()
 
+# GOAL 4.8/8.2 WER
+
+len(list(model.named_modules()))
+#201 layers
+
+model_parameters = filter(lambda p: p.requires_grad == True, model.parameters())
+params = sum([np.prod(p.size()) for p in model_parameters])
+print(params)
 # GOAL 4.8/8.2 WER
