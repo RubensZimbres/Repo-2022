@@ -76,7 +76,7 @@ def extract_all_chars(batch):
 vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True, remove_columns=common_voice_train.column_names)
 vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True, remove_columns=common_voice_test.column_names)
 
-vocab_list = vocab_list = [' ','a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô']
+vocab_list = vocab_list = [' ','a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô','ç','ã','õ']
 
 vocab_dict = {v: k for k, v in enumerate(vocab_list)}
 print(vocab_dict)
