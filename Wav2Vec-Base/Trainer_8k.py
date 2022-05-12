@@ -295,3 +295,6 @@ print(params)
 x=90195103+4200448
 print(x)
 # GOAL 4.8/8.2 WER
+
+{'loss': 2.8632, 'learning_rate': 8.813279950083196e-05, 'epoch': 0.86}                                                                                    
+{'loss': 2.3258, 'learning_rate': 8.719685940099835e-05, 'epoch': 1.15}      
