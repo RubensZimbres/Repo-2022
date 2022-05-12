@@ -69,7 +69,7 @@ def extract_all_chars(batch):
   return {"vocab": [vocab], "all_text": [all_text]}
 
 
-vocab_list = vocab_list = ['a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô']
+vocab_list = vocab_list = [' ','a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô','ç','ã','õ']
 
 vocab_dict = {v: k for k, v in enumerate(vocab_list)}
 print(vocab_dict)
