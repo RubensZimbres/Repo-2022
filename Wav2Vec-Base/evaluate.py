@@ -69,25 +69,25 @@ def extract_all_chars(batch):
   return {"vocab": [vocab], "all_text": [all_text]}
 
 
-vocab_list = vocab_list = [' ','a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô','ç','ã','õ']
+vocab_list = vocab_list = [' ','a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ç','ê','ô']
 
 vocab_dict = {v: k for k, v in enumerate(vocab_list)}
 print(vocab_dict)
 
-#vocab_dict["|"] = vocab_dict[" "]
-#del vocab_dict[" "]
-#vocab_dict["[UNK]"] = len(vocab_dict)
-#vocab_dict["[PAD]"] = len(vocab_dict)
-#print(len(vocab_dict))
+vocab_dict["|"] = vocab_dict[" "]
+del vocab_dict[" "]
+vocab_dict["[UNK]"] = len(vocab_dict)
+vocab_dict["[PAD]"] = len(vocab_dict)
+print(len(vocab_dict))
 
 with open('/home/theone/other_models/Wav2Vec/vocab.json', 'w') as vocab_file:
     json.dump(vocab_dict, vocab_file)
 
 
-tokenizer = Wav2Vec2CTCTokenizer("./vocab.json", unk_token=" ",word_delimiter_token=" ") #unk_token="[UNK], pad_token="[PAD]"",
+tokenizer = Wav2Vec2CTCTokenizer("/home/theone/other_models/Wav2Vec/vocab_eval.json", unk_token="[UNK]", pad_token="[PAD]",word_delimiter_token=" ")
 
 
-feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000, padding_value=0.0, do_normalize=True, return_attention_mask=True)
+feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=8000, padding_value=0.0, do_normalize=True, return_attention_mask=True)
 
 processor = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)
 
@@ -111,8 +111,8 @@ common_voice_test = common_voice_test.map(speech_file_to_array_fn)
 
 
 def resample(batch):
-    batch["speech"] = librosa.resample(np.asarray(batch["speech"]), 48_000, 16_000)
-    batch["sampling_rate"] = 16_000
+    batch["speech"] = librosa.resample(np.asarray(batch["speech"]), 48_000, 8_000)
+    batch["sampling_rate"] = 8_000
     return batch
 
 ### 14:00 ###############################
@@ -203,7 +203,7 @@ data_collator = DataCollatorCTCWithPadding(processor=processor, padding=True)
 
 wer_metric = load_metric("wer")
 
-model = Wav2Vec2ForCTC.from_pretrained("/home/theone/other_models/Wav2Vec/out/wav2vec2-large-xlsr-PTBR-demo/2/checkpoint-38500")
+model = Wav2Vec2ForCTC.from_pretrained("/home/theone/other_models/Wav2Vec/out/Base/run3-checkpoint-13500")
 model.to("cuda")
 
 
@@ -213,7 +213,7 @@ show_random_elements(common_voice_test)
 # Preprocessing the datasets.
 # We need to read the aduio files as arrays
 def evaluate(batch):
-	inputs = processor(batch["speech"], sampling_rate=16_000, return_tensors="pt", padding=True)
+	inputs = processor(batch["speech"], sampling_rate=8_000, return_tensors="pt", padding=True)
 
 	with torch.no_grad():
 		pred_ids = torch.argmax(model(inputs.input_values.to("cuda"), attention_mask=inputs.attention_mask.to("cuda")).logits,dim=-1)
@@ -222,7 +222,7 @@ def evaluate(batch):
 
 result = common_voice_test.map(evaluate, batched=True, batch_size=8)
 
-print("WER: {:2f}".format(100 * wer_metric.compute(predictions=result["pred_strings"], references=result["sentence"])))
+print("WER: {:2f}".format(wer_metric.compute(predictions=result["pred_strings"], references=result["sentence"])))
 
-result["sentence"][-2]
-result["pred_strings"][-2]
+result["sentence"][-200]
+result["pred_strings"][-200]
