@@ -84,7 +84,7 @@ with open('/home/theone/other_models/Wav2Vec/vocab.json', 'w') as vocab_file:
     json.dump(vocab_dict, vocab_file)
 
 
-tokenizer = Wav2Vec2CTCTokenizer("/home/theone/other_models/Wav2Vec/vocab_eval.json", unk_token="[UNK]", pad_token="[PAD]",word_delimiter_token=" ")
+tokenizer = Wav2Vec2CTCTokenizer("/home/theone/other_models/Wav2Vec/vocab22.json", unk_token="[UNK]", pad_token="[PAD]",word_delimiter_token=" ")
 
 
 feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=8000, padding_value=0.0, do_normalize=True, return_attention_mask=True)
