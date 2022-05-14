@@ -234,7 +234,7 @@ def compute_metrics(pred):
     return {"wer": wer}
 
 model = Wav2Vec2ForCTC.from_pretrained(
-    "/home/theone/other_models/Wav2Vec/out/Base/run5-checkpoint-55500",#"facebook/wav2vec2-base", #LR 1e-03, #"facebook/wav2vec2-large-xlsr-53",
+    "facebook/wav2vec2-base", #LR 1e-03, #"facebook/wav2vec2-large-xlsr-53",
     #attention_dropout=0.1,
     #hidden_dropout=0.1,
     #feat_proj_dropout=0.0,
