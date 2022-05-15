@@ -74,8 +74,8 @@ def extract_all_chars(batch):
   return {"vocab": [vocab], "all_text": [all_text]}
 
 
-vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=4, keep_in_memory=True, remove_columns=common_voice_train.column_names)
-vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=4, keep_in_memory=True, remove_columns=common_voice_test.column_names)
+vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=2, keep_in_memory=True, remove_columns=common_voice_train.column_names)
+vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=2, keep_in_memory=True, remove_columns=common_voice_test.column_names)
 
 vocab_list = list(set(vocab_train["vocab"][0]) | set(vocab_test["vocab"][0]))
 
@@ -154,8 +154,8 @@ def prepare_dataset(batch):
 
 ############# 1:20 
 
-common_voice_train = common_voice_train.map(prepare_dataset, remove_columns=common_voice_train.column_names, batch_size=4, num_proc=4, batched=True)
-common_voice_test = common_voice_test.map(prepare_dataset, remove_columns=common_voice_test.column_names, batch_size=4, num_proc=4, batched=True)
+common_voice_train = common_voice_train.map(prepare_dataset, remove_columns=common_voice_train.column_names, batch_size=2, num_proc=4, batched=True)
+common_voice_test = common_voice_test.map(prepare_dataset, remove_columns=common_voice_test.column_names, batch_size=2, num_proc=4, batched=True)
 
 show_random_elements(common_voice_train)
 
@@ -256,8 +256,8 @@ model = Wav2Vec2ForCTC.from_pretrained(
 training_args = TrainingArguments(
   output_dir="/home/theone/other_models/Wav2Vec/out/Base/mask false no space",
   group_by_length=True,
-  per_device_train_batch_size=4,
-  gradient_accumulation_steps=2,
+  per_device_train_batch_size=2,
+  gradient_accumulation_steps=1,
   evaluation_strategy="steps",
   num_train_epochs=16,
   fp16=True,
