@@ -60,7 +60,7 @@ show_random_elements(common_voice_train)
 
 
 def remove_special_characters(batch):
-    batch["sentence"] = re.sub(r'[\W\s]', ' ', batch["sentence"]).lower()
+    batch["sentence"] = re.sub(r'[\W\s]', ' ', batch["sentence"]).lower().lstrip().replace("   ","  ").replace("  "," ")
     return batch
 
 common_voice_train = common_voice_train.map(remove_special_characters)
@@ -73,10 +73,11 @@ def extract_all_chars(batch):
   vocab = list(set(all_text))
   return {"vocab": [vocab], "all_text": [all_text]}
 
+
 vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True, remove_columns=common_voice_train.column_names)
 vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True, remove_columns=common_voice_test.column_names)
 
-vocab_list = vocab_list = [' ','a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô','ç','ã','õ']
+vocab_list = list(set(vocab_train["vocab"][0]) | set(vocab_test["vocab"][0]))
 
 vocab_dict = {v: k for k, v in enumerate(vocab_list)}
 print(vocab_dict)
@@ -88,19 +89,19 @@ vocab_dict["[PAD]"] = len(vocab_dict)
 print(len(vocab_dict))
 
 with open('/home/theone/other_models/Wav2Vec/vocab.json', 'w') as vocab_file:
-    json.dump(vocab_dict, vocab_file)
+    json.dump(vocab_dict, vocab_file,ensure_ascii=False)
 
 
-tokenizer = Wav2Vec2CTCTokenizer("/home/theone/other_models/Wav2Vec/vocab33.json", unk_token="[UNK]", pad_token="[PAD]", word_delimiter_token="|")
+tokenizer = Wav2Vec2CTCTokenizer("/home/theone/other_models/Wav2Vec/vocab.json", unk_token="[UNK]", pad_token="[PAD]", word_delimiter_token="|")
 
 
 feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=8000, padding_value=0.0, do_normalize=True, return_attention_mask=False)
 
 processor = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)
 
-processor.save_pretrained("/home/theone/other_models/Wav2Vec/hugging-xlsr/wav2vec2-large-xlsr-PTBR-demo")
+processor.save_pretrained("/home/theone/other_models/Wav2Vec/hugging-xlsr/processor")
 
-output_dir="/home/theone/other_models/Wav2Vec/hugging-xlsr/wav2vec2-large-xlsr-PTBR-demo"
+output_dir="/home/theone/other_models/Wav2Vec/out/Base"
 
 print(common_voice_train[0])
 
@@ -234,7 +235,7 @@ def compute_metrics(pred):
     return {"wer": wer}
 
 model = Wav2Vec2ForCTC.from_pretrained(
-    "facebook/wav2vec2-base", #LR 1e-03, #"facebook/wav2vec2-large-xlsr-53",
+    "/home/theone/other_models/Wav2Vec/out/Base/mask false no space/checkpoint-10000",#"facebook/wav2vec2-base", #LR 1e-03, #"facebook/wav2vec2-large-xlsr-53",
     #attention_dropout=0.1,
     #hidden_dropout=0.1,
     #feat_proj_dropout=0.0,
@@ -251,7 +252,7 @@ model.freeze_feature_extractor()
 
 
 training_args = TrainingArguments(
-  output_dir="/home/theone/other_models/Wav2Vec/out/Base",
+  output_dir="/home/theone/other_models/Wav2Vec/out/Base/mask false no space",
   group_by_length=True,
   per_device_train_batch_size=8,
   #gradient_accumulation_steps=2,
