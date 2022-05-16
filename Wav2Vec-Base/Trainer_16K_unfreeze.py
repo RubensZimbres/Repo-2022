@@ -250,16 +250,21 @@ model = Wav2Vec2ForCTC.from_pretrained(
 )
 
 
-#model.freeze_feature_extractor()
+model.freeze_feature_extractor()
+
+for name, param in model.named_parameters():
+    if name.startswith("wav2vec2.encoder.layers.11"):
+        param.requires_grad = True
+    
 
 
 training_args = TrainingArguments(
   output_dir="/home/theone/other_models/Wav2Vec/out/Base/mask false no space",
   group_by_length=True,
   per_device_train_batch_size=4,
-  gradient_accumulation_steps=1,
+  gradient_accumulation_steps=2,
   evaluation_strategy="steps",
-  num_train_epochs=16,
+  num_train_epochs=35,
   fp16=True,
   save_steps=500,
   eval_steps=2000,
