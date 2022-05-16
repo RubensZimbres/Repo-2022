@@ -97,7 +97,7 @@ tokenizer = Wav2Vec2CTCTokenizer("/home/theone/other_models/Wav2Vec/vocab.json",
 
 ###################################################
 #### HERE requires_grad=True
-feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000, requires_grad=True, padding_value=0.0, do_normalize=True, return_attention_mask=True)
+feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=8000, padding_value=0.0, do_normalize=True, return_attention_mask=True)
 
 processor = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)
 
@@ -122,8 +122,8 @@ common_voice_test = common_voice_test.map(speech_file_to_array_fn, remove_column
 
 
 def resample(batch):
-    batch["speech"] = librosa.resample(np.asarray(batch["speech"]), 48_000, 16_000)
-    batch["sampling_rate"] = 16_000
+    batch["speech"] = librosa.resample(np.asarray(batch["speech"]), 48_000, 8_000)
+    batch["sampling_rate"] = 8_000
     return batch
 
 ### 14:00 ###############################
@@ -255,6 +255,8 @@ model.freeze_feature_extractor()
 for name, param in model.named_parameters():
     if name.startswith("wav2vec2.encoder.layers.11"):
         param.requires_grad = True
+    else:
+        param.requires_grad = False
     
 
 
