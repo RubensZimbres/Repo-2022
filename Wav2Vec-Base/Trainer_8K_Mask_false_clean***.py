@@ -1,5 +1,7 @@
 # source /home/anaconda3/bin/activate torch
 
+## stuck 0.4 ##
+
 # pip install wandb
 
 from datasets import load_dataset, load_metric
