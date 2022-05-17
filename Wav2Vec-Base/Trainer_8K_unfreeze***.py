@@ -97,11 +97,11 @@ tokenizer = Wav2Vec2CTCTokenizer("/home/theone/other_models/Wav2Vec/vocab.json",
 
 ###################################################
 #### HERE requires_grad=True
-feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=8000, padding_value=0.0, do_normalize=True, return_attention_mask=True)
+feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=8000, padding_value=0.0, do_normalize=True, return_attention_mask=False)
 
 processor = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)
 
-processor.save_pretrained("/home/theone/other_models/Wav2Vec/hugging-xlsr/processor")
+#processor.save_pretrained("/home/theone/other_models/Wav2Vec/hugging-xlsr/processor")
 
 output_dir="/home/theone/other_models/Wav2Vec/out/Base"
 
@@ -154,8 +154,8 @@ def prepare_dataset(batch):
 
 ############# 1:20 
 
-common_voice_train = common_voice_train.map(prepare_dataset, remove_columns=common_voice_train.column_names, batch_size=2, num_proc=4, batched=True)
-common_voice_test = common_voice_test.map(prepare_dataset, remove_columns=common_voice_test.column_names, batch_size=2, num_proc=4, batched=True)
+common_voice_train = common_voice_train.map(prepare_dataset, remove_columns=common_voice_train.column_names, batch_size=8, num_proc=4, batched=True)
+common_voice_test = common_voice_test.map(prepare_dataset, remove_columns=common_voice_test.column_names, batch_size=8, num_proc=4, batched=True)
 
 show_random_elements(common_voice_train)
 
@@ -240,26 +240,33 @@ def compute_metrics(pred):
 model = Wav2Vec2ForCTC.from_pretrained(
     #"/home/theone/other_models/Wav2Vec/out/Base/mask false no space/run1-checkpoint-48500"
     "facebook/wav2vec2-base", #LR 1e-03, #"facebook/wav2vec2-large-xlsr-53",
-    attention_dropout=0.1,
-    hidden_dropout=0.1,
-    feat_proj_dropout=0.0,
-    mask_time_prob=0.05,
-    layerdrop=0.1,
-#    gradient_checkpointing=True,
+    #attention_dropout=0.1,
+    #hidden_dropout=0.1,
+    #feat_proj_dropout=0.0,
+    #mask_time_prob=0.05,
+    #layerdrop=0.1,
+    #gradient_checkpointing=True,
     ctc_loss_reduction="mean",
     pad_token_id=processor.tokenizer.pad_token_id,
     vocab_size=len(processor.tokenizer)
 )
 
-for name, param in model.named_parameters():
-    print(name)
-    if name.startswith("wav2vec2.encoder.layers.11.final_layer") | name.startswith("wav2vec2.encoder.layers.11.feed_forward.output") | name.startswith("lm_head"):
-        param.requires_grad = True
-#    else:
-#        param.requires_grad = False
 
 
 model.freeze_feature_extractor()
+
+for name, param in model.named_parameters():
+    print(name,param.requires_grad)
+#    if name.startswith("wav2vec2.encoder.layers.11.final_layer") | name.startswith("wav2vec2.encoder.layers.11.feed_forward.output") | name.startswith("lm_head"):
+    if name.startswith("wav2vec2.encoder"):
+        param.requires_grad = False
+
+for name, param in model.named_parameters():
+    print(name,param.requires_grad)
+    if name.startswith("wav2vec2.encoder.layers.11"):
+        param.requires_grad = True
+#    else:
+#        param.requires_grad = False
 
     
 training_args = TrainingArguments(
