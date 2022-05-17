@@ -159,6 +159,7 @@ common_voice_test = common_voice_test.map(prepare_dataset, remove_columns=common
 
 show_random_elements(common_voice_train)
 
+
 @dataclass
 class DataCollatorCTCWithPadding:
     """
@@ -252,30 +253,28 @@ model = Wav2Vec2ForCTC.from_pretrained(
 
 for name, param in model.named_parameters():
     print(name)
-    if name.startswith("wav2vec2.encoder.layers.11") | name.startswith("lm_head"):
+    if name.startswith("wav2vec2.encoder.layers.11.final_layer") | name.startswith("wav2vec2.encoder.layers.11.feed_forward.output") | name.startswith("lm_head"):
         param.requires_grad = True
-    else:
-        param.requires_grad = False
+#    else:
+#        param.requires_grad = False
 
 
-#model.freeze_feature_extractor()
+model.freeze_feature_extractor()
 
     
-
-
 training_args = TrainingArguments(
   output_dir="/home/theone/other_models/Wav2Vec/out/Base/mask false no space",
   group_by_length=True,
-  per_device_train_batch_size=4,
-  gradient_accumulation_steps=2,
+  per_device_train_batch_size=16,
+  gradient_accumulation_steps=1,
   evaluation_strategy="steps",
   num_train_epochs=35,
   fp16=True,
   save_steps=500,
   eval_steps=2000,
-  logging_steps=200,
-  learning_rate=0.9e-4,
-  warmup_steps=200,
+  logging_steps=100,
+  learning_rate=0.9e-5,
+  warmup_steps=100,
   save_total_limit=10,
   push_to_hub=False,
 )
