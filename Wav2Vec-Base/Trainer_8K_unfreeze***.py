@@ -74,8 +74,8 @@ def extract_all_chars(batch):
   return {"vocab": [vocab], "all_text": [all_text]}
 
 
-vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=2, keep_in_memory=True, remove_columns=common_voice_train.column_names)
-vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=2, keep_in_memory=True, remove_columns=common_voice_test.column_names)
+vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True, remove_columns=common_voice_train.column_names)
+vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True, remove_columns=common_voice_test.column_names)
 
 vocab_list = list(set(vocab_train["vocab"][0]) | set(vocab_test["vocab"][0]))
 
@@ -237,26 +237,29 @@ def compute_metrics(pred):
     return {"wer": wer}
 
 model = Wav2Vec2ForCTC.from_pretrained(
+    #"/home/theone/other_models/Wav2Vec/out/Base/mask false no space/run1-checkpoint-48500"
     "facebook/wav2vec2-base", #LR 1e-03, #"facebook/wav2vec2-large-xlsr-53",
     attention_dropout=0.1,
     hidden_dropout=0.1,
     feat_proj_dropout=0.0,
     mask_time_prob=0.05,
     layerdrop=0.1,
-    gradient_checkpointing=True,
+#    gradient_checkpointing=True,
     ctc_loss_reduction="mean",
     pad_token_id=processor.tokenizer.pad_token_id,
     vocab_size=len(processor.tokenizer)
 )
 
-
-model.freeze_feature_extractor()
-
 for name, param in model.named_parameters():
-    if name.startswith("wav2vec2.encoder.layers.11"):
+    print(name)
+    if name.startswith("wav2vec2.encoder.layers.11") | name.startswith("lm_head"):
         param.requires_grad = True
     else:
         param.requires_grad = False
+
+
+#model.freeze_feature_extractor()
+
     
 
 
