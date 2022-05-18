@@ -2,8 +2,6 @@
 
 # pip install wandb
 
-# source /home/anaconda3/bin/activate torch
-
 from datasets import load_dataset, load_metric
 from transformers import Trainer
 from transformers import TrainingArguments
@@ -27,10 +25,8 @@ import json
 import wandb
 import os
 
-memory=5800/240
 os.environ["WANDB_SILENT"] = "true"
 os.environ["WANDB_DISABLED"] = "true"
-os.environ["PYTORCH_CUDA_ALLOC_CONF"]="max_split_size_mb:{}".format(memory)
 
 try:
     import wandb
@@ -64,7 +60,7 @@ show_random_elements(common_voice_train)
 
 
 def remove_special_characters(batch):
-    batch["sentence"] = re.sub(r'[\W\s]', ' ', batch["sentence"]).lower() + " "
+    batch["sentence"] = re.sub(r'[\W\s]', ' ', batch["sentence"]).lower().lstrip().replace("   ","  ").replace("  ","")
     return batch
 
 common_voice_train = common_voice_train.map(remove_special_characters)
@@ -77,30 +73,29 @@ def extract_all_chars(batch):
   vocab = list(set(all_text))
   return {"vocab": [vocab], "all_text": [all_text]}
 
-# False
+vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=2, keep_in_memory=True, remove_columns=common_voice_train.column_names)
+vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=2, keep_in_memory=True, remove_columns=common_voice_test.column_names)
 
-vocab_train = common_voice_train.map(extract_all_chars, batched=True, batch_size=1, keep_in_memory=True, remove_columns=common_voice_train.column_names)
-vocab_test = common_voice_test.map(extract_all_chars, batched=True, batch_size=1, keep_in_memory=True, remove_columns=common_voice_test.column_names)
-
-vocab_list = vocab_list = [' ','a','b','c','d','e','f','g','h','i','j','l','m','n','o','p','q','r','s','t','u','v','x','z','á','é','ó','ê','ô','ç','ã','õ']
+vocab_list = list(set(vocab_train["vocab"][0]) | set(vocab_test["vocab"][0]))
 
 vocab_dict = {v: k for k, v in enumerate(vocab_list)}
 print(vocab_dict)
 
 vocab_dict["|"] = vocab_dict[" "]
 del vocab_dict[" "]
+
 vocab_dict["[UNK]"] = len(vocab_dict)
 vocab_dict["[PAD]"] = len(vocab_dict)
 print(len(vocab_dict))
 
-with open('vocab.json', 'w') as vocab_file:
-    json.dump(vocab_dict, vocab_file)
+with open('/home/theone/other_models/Wav2Vec/vocab.json', 'w') as vocab_file:
+    json.dump(vocab_dict, vocab_file,ensure_ascii=False)
 
 
-tokenizer = Wav2Vec2CTCTokenizer("./vocab.json", unk_token="[UNK]", pad_token="[PAD]", word_delimiter_token="|")
+tokenizer = Wav2Vec2CTCTokenizer("/home/theone/other_models/Wav2Vec/vocab.json", unk_token="[UNK]", pad_token="[PAD]", word_delimiter_token="|")
 
 
-feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000, padding_value=0.0, do_normalize=True, return_attention_mask=True)
+feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=8000, padding_value=0.0, do_normalize=True, return_attention_mask=True)
 
 processor = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)
 
@@ -125,8 +120,8 @@ common_voice_test = common_voice_test.map(speech_file_to_array_fn, remove_column
 
 
 def resample(batch):
-    batch["speech"] = librosa.resample(np.asarray(batch["speech"]), 48_000, 16_000)
-    batch["sampling_rate"] = 16_000
+    batch["speech"] = librosa.resample(np.asarray(batch["speech"]), 48_000, 8_000)
+    batch["sampling_rate"] = 8_000
     return batch
 
 ### 14:00 ###############################
@@ -134,10 +129,9 @@ def resample(batch):
 common_voice_train = common_voice_train.map(resample, num_proc=4)
 common_voice_test = common_voice_test.map(resample, num_proc=4)
 
-
 show_random_elements(common_voice_train)
 
-common_voice_train['input_values']
+
 
 
 
@@ -160,13 +154,11 @@ def prepare_dataset(batch):
 
 ############# 1:20 
 
-common_voice_train = common_voice_train.map(prepare_dataset, remove_columns=common_voice_train.column_names, batch_size=1, num_proc=4, batched=True)
-common_voice_test = common_voice_test.map(prepare_dataset, remove_columns=common_voice_test.column_names, batch_size=1, num_proc=4, batched=True)
+common_voice_train = common_voice_train.map(prepare_dataset, remove_columns=common_voice_train.column_names, batch_size=2, num_proc=4, batched=True)
+common_voice_test = common_voice_test.map(prepare_dataset, remove_columns=common_voice_test.column_names, batch_size=2, num_proc=4, batched=True)
 
-############## 3:00
+show_random_elements(common_voice_train)
 
-max_input_length_in_sec = 5.0
-common_voice_train = common_voice_train.filter(lambda x: len(x) < max_input_length_in_sec * processor.feature_extractor.sampling_rate, input_columns=["input_values"])
 
 @dataclass
 class DataCollatorCTCWithPadding:
@@ -245,18 +237,13 @@ def compute_metrics(pred):
 
     return {"wer": wer}
 
-import gc
-gc.collect()
-torch.cuda.empty_cache()
-
-
 model = Wav2Vec2ForCTC.from_pretrained(
-    "facebook/wav2vec2-large-xlsr-53",
+    "facebook/wav2vec2-large-xlsr-53",    
     attention_dropout=0.1,
     hidden_dropout=0.1,
     feat_proj_dropout=0.0,
-    mask_time_prob=0.05,
-    layerdrop=0.1,
+    mask_time_prob=0.1,
+    layerdrop=0.1,#0.1,
 #    gradient_checkpointing=True,
     ctc_loss_reduction="mean",
     pad_token_id=processor.tokenizer.pad_token_id,
@@ -267,18 +254,32 @@ model = Wav2Vec2ForCTC.from_pretrained(
 model.freeze_feature_extractor()
 
 
+for name, param in model.named_parameters():
+    if name.startswith("wav2vec2.encoder"):
+        param.requires_grad = False
+
+for name, param in model.named_parameters():
+    if name.startswith("wav2vec2.encoder.layers.2"): # | name.startswith("wav2vec2.encoder.layers.19"):
+        param.requires_grad = True
+
+
+
+for name, param in model.named_parameters():
+    print(name,param.requires_grad)
+
 training_args = TrainingArguments(
-  output_dir="/home/theone/other_models/Wav2Vec/out/wav2vec2-large-xlsr-PTBR",
+  output_dir="/home/theone/other_models/Wav2Vec/out/Base",
   group_by_length=True,
-  per_device_train_batch_size=1,
-#  gradient_accumulation_steps=2,
+  per_device_train_batch_size=2,
+  gradient_accumulation_steps=1,
   evaluation_strategy="steps",
-  num_train_epochs=16,
+  num_train_epochs=40,
   fp16=True,
   save_steps=500,
   eval_steps=2000,
   logging_steps=100,
-  learning_rate=0.9e-4,
+  learning_rate=0.9e-5, ### DIMINUIR LEARNING RATE 0.4
+  weight_decay=0.0,
   warmup_steps=200,
   save_total_limit=10,
   push_to_hub=False,
@@ -295,16 +296,15 @@ trainer = Trainer(
     tokenizer=processor.feature_extractor,
 )
 
-
-
 trainer.train()
 
-# GOAL 4.8/8.2 WER
 
 len(list(model.named_modules()))
-#201 layers
+#201 layers // 375
 
-model_parameters = filter(lambda p: p.requires_grad == True, model.parameters())
+model_parameters = filter(lambda p: p.requires_grad == False, model.parameters())
 params = sum([np.prod(p.size()) for p in model_parameters])
 print(params)
+x=90195103+235123840
+print(x)
 # GOAL 4.8/8.2 WER
