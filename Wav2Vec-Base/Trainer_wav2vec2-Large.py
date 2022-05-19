@@ -92,7 +92,7 @@ with open('/home/theone/other_models/Wav2Vec/vocab.json', 'w') as vocab_file:
     json.dump(vocab_dict, vocab_file,ensure_ascii=False)
 
 
-tokenizer = Wav2Vec2CTCTokenizer("/home/theone/other_models/Wav2Vec/vocab.json", unk_token="[UNK]", pad_token="[PAD]", word_delimiter_token="|")
+tokenizer = Wav2Vec2CTCTokenizer("/home/theone/other_models/Wav2Vec/vocab33.json", unk_token="[UNK]", pad_token="[PAD]", word_delimiter_token="|")
 
 
 feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=8000, padding_value=0.0, do_normalize=True, return_attention_mask=True)
@@ -259,7 +259,7 @@ for name, param in model.named_parameters():
         param.requires_grad = False
 
 for name, param in model.named_parameters():
-    if name.startswith("wav2vec2.encoder.layers.2"): # | name.startswith("wav2vec2.encoder.layers.19"):
+    if name.startswith("wav2vec2.encoder.layers.2") | name.startswith("wav2vec2.encoder.layers.15") | name.startswith("wav2vec2.encoder.layers.16") | name.startswith("wav2vec2.encoder.layers.17") | name.startswith("wav2vec2.encoder.layers.18") | name.startswith("wav2vec2.encoder.layers.19"):
         param.requires_grad = True
 
 
