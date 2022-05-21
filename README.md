@@ -7,10 +7,10 @@ In this Python file, I add a cellular automaton to a PyTorch kernel, add a resid
 This folder has the code to customize ResNet Architecture via dictionary config, changing first two layers to receive multispectral images with 9 channels. Final layers are also added, for training and inference.  
   
 <b>Tensorflow Hub</b>  
-This folder has the code to generate word embeddings using BERT multilingual model from Tensorflow Hub, in the format (2,768).  
+This folder has the code to generate word embeddings using BERT multilingual model from Tensorflow Hub, in the shape (2,768).  
   
 <b>Wav2Vec</b>  
-Here you can find Python code to finetune Wav2Vec model of Speech Recognition, as well as the code for testing the model. 
+Here you can find Python code to finetune Wav2Vec model (300 MB) of Speech Recognition on Common Voice dataset, as well as the code for evaluating the model. 
   
 <b>Wav2Vec2-Large-xlsr</b>  
 These files allow the training of Facebook's Wav2Vec2-Large-xlsr (model 1.5 GB) on Common Voice dataset on a RTX 2060. Some layers are frozen to allow fit in the GPU. Paper available at: <a href="url">https://arxiv.org/abs/2006.11477</a>. A pretrained version of the model is at my Hugging Face repository - Rubens Zimbres: 
