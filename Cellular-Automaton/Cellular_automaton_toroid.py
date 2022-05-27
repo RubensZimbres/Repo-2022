@@ -134,7 +134,7 @@ import torch.optim as optim
 #Tuning
 n_epochs = 2000
 learning_rate = 0.001 #0.01
-momentum1=0.9 #0.6
+momentum1=0.6 #0.9 - em seguida usar 0.3
 log_interval = 500
 train_losses = []
 test_losses = []
@@ -155,7 +155,7 @@ optimizer = optim.SGD(net.parameters(), lr=learning_rate,momentum=momentum1)
 
 def train(epoch):
   net.train()
-  checkpoint = torch.load('/home/theone/other_models/Cellular Automaton/results/128/model_acc_99.27_1897.pth')
+  checkpoint = torch.load('/home/theone/other_models/Cellular Automaton/results/128/model_acc_99.29_377.pth')
   net.load_state_dict(checkpoint)
   for batch_idx, (data, target) in enumerate(train_loader):
     data, target = data.to(device), target.to(device)
