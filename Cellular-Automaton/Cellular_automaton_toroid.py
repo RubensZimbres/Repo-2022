@@ -133,7 +133,7 @@ import torch.optim as optim
 
 #Tuning
 n_epochs = 2000
-learning_rate = 0.001 #0.01
+learning_rate = 0.001 # from 0.01 em seguida 0.0005
 momentum1=0.6 #0.9 - em seguida usar 0.3
 log_interval = 500
 train_losses = []
@@ -203,8 +203,8 @@ batch_idx, (example_data, example_targets) = next(examples)
 
 with torch.no_grad():
     model = Net(c)
-    #checkpoint = torch.load('/home/theone/other_models/Cellular Automaton/results/improved/model_acc_99.23_1220.pth')
-    #model.load_state_dict(checkpoint)
+    checkpoint = torch.load('/home/theone/other_models/Cellular Automaton/results/128/model_acc_99.29_377.pth')
+    model.load_state_dict(checkpoint)
     index = 100
     item = example_data
     image = item.to('cpu')
