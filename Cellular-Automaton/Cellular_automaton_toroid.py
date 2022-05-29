@@ -14,18 +14,14 @@ regra=21590625125649876448194552191168939458959585281520212287057525638079592376
 base1=5
 states=np.arange(0,base1)
 dimensions=5
+
+## KERNEL 5x5
+
 kernel=[[1, 0, 1, 0, 1],
        [0, 1, 0, 1, 0],
        [0, 0, 1, 0, 0],
        [0, 1, 0, 1, 0],
-       [1, 0, 1, 0, 1]] #np.random.randint(len(states), size=(dimensions,dimensions))
-
-#kernel=[[0, 0, 1, 0, 0],
- #      [0, 0, 1, 0, 0],
-  #     [1, 1, 1,1, 1],
-   #    [0, 0, 1, 0, 0],
-    #   [0, 0, 1, 0, 0]] #np.random.randint(len(states), size=(dimensions,dimensions))
-
+       [1, 0, 1, 0, 1]]
 
 def cellular_automaton():
     global kernel
@@ -107,7 +103,6 @@ class Net(nn.Module):
         torch.nn.init.xavier_uniform(self.fc3.weight)
         self.batch_norm = nn.BatchNorm1d(3136)
         self.conv1.weight = nn.Parameter(kernel,requires_grad=False)
-        #self.conv2.weight = nn.Parameter(kernel,requires_grad=False)
 
 
     def forward(self, x):
@@ -131,10 +126,9 @@ class Net(nn.Module):
 
 import torch.optim as optim
 
-#Tuning
 n_epochs = 2000
-learning_rate = 0.001 # from 0.01 em seguida 0.0005
-momentum1=0.6 #0.9 - em seguida usar 0.3
+learning_rate = 0.001 # from 0.01
+momentum1=0.6 #from 0.9
 log_interval = 500
 train_losses = []
 test_losses = []
@@ -145,17 +139,13 @@ def norm(x):
 
 c=torch.from_numpy(norm(cellular_automaton()).astype(np.float16).reshape(-1,1,dimensions,dimensions)).type(torch.cuda.FloatTensor)
 
-#plt.imshow(c.cpu().reshape(5,5))
-#plt.show()
-
-
 net = Net(c).to(device)
 optimizer = optim.SGD(net.parameters(), lr=learning_rate,momentum=momentum1)
 
 
 def train(epoch):
   net.train()
-  checkpoint = torch.load('/home/theone/other_models/Cellular Automaton/results/128/model_acc_99.29_377.pth')
+  checkpoint = torch.load('/home/user/model_acc_99.29_377.pth')
   net.load_state_dict(checkpoint)
   for batch_idx, (data, target) in enumerate(train_loader):
     data, target = data.to(device), target.to(device)
@@ -190,7 +180,7 @@ def test():
         print('\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.6f}%)\n'.format(
                 test_loss, correct, len(test_loader.dataset),
                 100. * correct / len(test_loader.dataset)))
-        torch.save(net.state_dict(), '/home/theone/other_models/Cellular Automaton/results/128/model_acc_{1}_{0}.pth'.format(epoch,100. * correct / len(test_loader.dataset)))
+        torch.save(net.state_dict(), '/home/user/results/model_acc_{1}_{0}.pth'.format(epoch,100. * correct / len(test_loader.dataset)))
 
 from tqdm import tqdm
 for epoch in tqdm(range(1, n_epochs + 1)):
@@ -203,7 +193,7 @@ batch_idx, (example_data, example_targets) = next(examples)
 
 with torch.no_grad():
     model = Net(c)
-    checkpoint = torch.load('/home/theone/other_models/Cellular Automaton/results/128/model_acc_99.29_377.pth')
+    checkpoint = torch.load('/home/user/results/model_acc_99.29_377.pth')
     model.load_state_dict(checkpoint)
     index = 100
     item = example_data
