@@ -43,9 +43,14 @@ def cellular_automaton(kernel):
 
     return final_state
 
-def interact(part,cc,pp):
+def interact_client(part,cc,pp):
     initial_condition=[clients[cc],clients[part],pros[pp]]
     print(initial_condition)
     return cellular_automaton(initial_condition)
 
-interact(40,3,2)
+def interact_pros(ccc,part,ppp):
+    initial_condition=[clients[ccc],pros[part],pros[ppp]]
+    print(initial_condition)
+    return cellular_automaton(initial_condition)
+
+interact_pros(49,4,1)
