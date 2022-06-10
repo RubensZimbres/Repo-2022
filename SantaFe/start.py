@@ -14,10 +14,6 @@ states=np.arange(0,base1)
 dimensions=3
 
 
-kernel=[
-       [ 3, 3, 4],
-       ]
-
 def cellular_automaton(kernel):
 #    global kernel
     lista=states
@@ -40,16 +36,16 @@ def cellular_automaton(kernel):
 
     def ca(row):
         out=[]
-        out.append(final_state_central_cell[next((i for i, val in enumerate(all_possible_states) if np.all(val == kernel[row])), -1)][1])
+        out.append(final_state_central_cell[next((i for i, val in enumerate(all_possible_states) if np.all(val == kernel)), -1)][1])
         return out
 
-    kernel=np.array(ca(0))
+    final_state=np.array(ca(0))
 
-    return kernel
+    return final_state
 
 def interact(part,cc,pp):
     initial_condition=[clients[cc],clients[part],pros[pp]]
     print(initial_condition)
     return cellular_automaton(initial_condition)
 
-interact(1,2,1)
+interact(40,3,2)
