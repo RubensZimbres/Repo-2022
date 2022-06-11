@@ -97,7 +97,7 @@ def interact_pros(part):
 mean_cli=[]
 mean_pro=[]
 
-m=80
+m=3
 while m>0:
     m=m-1
     output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
@@ -169,14 +169,14 @@ while m>0:
     plt.subplot(312)
     plt.plot(mean_cli, color='red', label='Clients average perception')
     plt.plot(mean_pro, color='blue', label='Professionals average perception')
-    plt.legend()
+    plt.legend(fontsize=15)
     plt.subplot(313)
     plt.plot(sum_each, label='Count of zeros', color='red')
     plt.plot(sum_each1, label='Count of 1s', color='orange')
     plt.plot(sum_each2, label='Count of 2s', color='yellow')
     plt.plot(sum_each3, label='Count of 3s', color='green')
     plt.plot(sum_each4, label='Count of 4s', color='blue')
-    plt.legend()
+    plt.legend(fontsize=15)
     plt.tight_layout()
     plt.savefig('/home/theone/Documents/MBA_binary_noise/foo{}.png'.format(time()))
 
