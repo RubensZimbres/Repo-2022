@@ -13,9 +13,9 @@ from itertools import count
 import matplotlib as mpl
 
 np.random.seed(222)
-regra=2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
+regra=30 #2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
 #2159062512564987644819455219116893945895958528152021228705752563807962227809675103689306
-base1=5
+base1=2 #5
 length_clients=200
 length_pros=20
 degree_of_similarity=2
@@ -108,9 +108,11 @@ while m>0:
     if base1<3:
         for value in list(mapa.values())[0:length_clients]:
             if value==int(base1/2):
-                cores.append('blue')
+                cores.append('black')
             if value!=int(base1/2):
-                cores.append('red')
+                cores.append('gray')
+        for value in list(mapa.values())[length_clients:]:
+            cores.append('blue')
     else:
         for value in list(mapa.values())[0:length_clients]:
             if value<int(base1-1/2):
@@ -120,13 +122,16 @@ while m>0:
             if value==int(base1-1/2):
                 cores.append('yellow')
 
-    for value in list(mapa.values())[length_clients:]:
-        cores.append('black')
+        for value in list(mapa.values())[length_clients:]:
+            cores.append('black')
 
     fig, ax = plt.subplots(figsize=(22, 19))
     fig.subplots_adjust(bottom=0.5)    
     d = dict(G.degree())
-    cmap=mpl.cm.get_cmap('jet_r')
+    if base1>=3:
+        cmap=mpl.cm.get_cmap('jet_r')
+    else:
+        cmap=mpl.cm.get_cmap('gray_r')
     #nx.draw(G, with_labels=False, font_weight='light',linewidths=2,width=0.3,node_color=cores,node_size=[(v * 7)+1 for v in degree], cmap=plt.cm.jet)
     ec = nx.draw_networkx_edges(G, pos, alpha=0.2)
     nc = nx.draw_networkx_nodes(G, pos, nodelist=nodes, node_color=cores, 
@@ -142,11 +147,11 @@ while m>0:
     #ax.set_ylabel('Quality Perception', fontsize=40) 
     #plt.colorbar(nc)
     plt.axis('off')
-    plt.savefig('/home/theone/Documents/MBA_spectral_sim00/foo{}.png'.format(time()))
+    plt.savefig('/home/theone/Documents/MBA_binary/foo{}.png'.format(time()))
 
 
-fp_in = "/home/theone/Documents/MBA_spectral_sim00/foo*.png"
-fp_out = "/home/theone/Documents/MBA_spectral_movie_sim00_Red.gif"
+fp_in = "/home/theone/Documents/MBA_binary/foo*.png"
+fp_out = "/home/theone/Documents/MBA_binary_movie.gif"
 
 img, *imgs = [Image.open(f) for f in sorted(glob.glob(fp_in))]
 img.save(fp=fp_out, format='GIF', append_images=imgs,
