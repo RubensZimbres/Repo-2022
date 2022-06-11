@@ -12,11 +12,16 @@ from PIL import Image
 from itertools import count
 import matplotlib as mpl
 
-regra=2159062512564987644819455219116893945895958528152021228705752563807962227809675103689306
-base1=5
+np.random.seed(222)
+regra=30 #2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
+#2159062512564987644819455219116893945895958528152021228705752563807962227809675103689306
+base1=2 #5
 length_clients=200
 length_pros=20
 degree_of_similarity=2
+environment_noise=0
+
+
 
 clients=np.random.randint(5, size=(1,length_clients))[0]
 pros=np.random.randint(5, size=(1,length_pros))[0]
@@ -80,63 +85,86 @@ def interact_pros(part):
     profs.append([part,ccc])
     return cellular_automaton(initial_condition)
 
+
 ## LOOP
 
-m=50
+mean_cli=[]
+mean_pro=[]
+
+m=20
 while m>0:
     m=m-1
     output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
     output_pros=list(map(lambda x: interact_pros(x),range(len(clients),len(all))))
-    all=np.concatenate([output_client,output_pros]).reshape(1,-1)[0]
+    all=[int(i*1-environment_noise) for i in np.concatenate([output_client,output_pros]).reshape(1,-1)[0]]
     clients=all[0:length_clients]
     pros=all[length_clients:]
-
+    mean_cli.append(np.mean(clients))
+    mean_pro.append(np.mean(pros))
     edges=profs+clientes
     nodes=np.arange(0,len(all))
 
     G = nx.Graph()
     G.add_nodes_from(nodes)
     G.add_edges_from(edges)
-    pos = nx.spectral_layout(G)
+    pos = nx.spring_layout(G) #nx.spectral_layout(G)
     list_degree=list(G.degree())
     nodes , degree = map(list, zip(*list_degree))
     mapa=dict(np.transpose(np.array([nodes,all])))
     cores=[]
-    for value in list(mapa.values())[0:length_clients]:
-        if value<2:
-            cores.append('red')
-        if value>2:
-            cores.append('green')
-        if value==2:
-            cores.append('yellow')
-    for value in list(mapa.values())[length_clients:]:
-        cores.append('blue')
+    if base1<3:
+        for value in list(mapa.values())[0:length_clients]:
+            if value==int(base1/2):
+                cores.append('black')
+            if value!=int(base1/2):
+                cores.append('gray')
+        for value in list(mapa.values())[length_clients:]:
+            cores.append('blue')
+    else:
+        for value in list(mapa.values())[0:length_clients]:
+            if value<int(base1-1/2):
+                cores.append('red')
+            if value>int(base1-1/2):
+                cores.append('blue')
+            if value==int(base1-1/2):
+                cores.append('yellow')
 
-    fig, ax = plt.subplots(figsize=(20, 16))
+        for value in list(mapa.values())[length_clients:]:
+            cores.append('black')
+
+    fig, ax = plt.subplots(figsize=(22, 15))
     fig.subplots_adjust(bottom=0.5)    
     d = dict(G.degree())
-
+    if base1>=3:
+        cmap=mpl.cm.get_cmap('jet_r')
+    else:
+        cmap=mpl.cm.get_cmap('gray_r')
     #nx.draw(G, with_labels=False, font_weight='light',linewidths=2,width=0.3,node_color=cores,node_size=[(v * 7)+1 for v in degree], cmap=plt.cm.jet)
+    plt.subplot(221)
     ec = nx.draw_networkx_edges(G, pos, alpha=0.2)
     nc = nx.draw_networkx_nodes(G, pos, nodelist=nodes, node_color=cores, 
-                             node_size=[(v * 7)+1 for v in degree], cmap='RdYIGn',node_shape='H')
-    cmap = (mpl.colors.ListedColormap(['red', 'orange', 'yellow', 'green']).with_extremes(over='0.25', under='0.75'))
+                             node_size=[(v * 7)+1 for v in degree], cmap=cmap,node_shape='H')
+    #cmap = (mpl.colors.ListedColormap(['red', 'orange', 'yellow', 'green']).with_extremes(over='0.25', under='0.75'))
 
-    bounds = [0, 1, 2, 3, 4]
+    #bounds = [0, 1, 2, 3, 4]
     #norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-    norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+    norm = mpl.colors.Normalize(vmin=0, vmax=4)
     cbar=plt.colorbar(mpl.cm.ScalarMappable(cmap=cmap, norm=norm))
     cbar.set_label(label='Quality Perception', size='xx-large', weight='bold')
     cbar.ax.tick_params(labelsize='large')
     #ax.set_ylabel('Quality Perception', fontsize=40) 
     #plt.colorbar(nc)
     plt.axis('off')
-    plt.savefig('/home/theone/Documents/MBA_spectral_sim00/foo{}.png'.format(time()))
+    plt.subplot(223)
+    plt.plot(mean_cli, color='green', label='Clients average perception')
+    plt.plot(mean_pro, color='black', label='Professionals average perception')
+    plt.legend()
+    plt.savefig('/home/theone/Documents/MBA_binary_noise/foo{}.png'.format(time()))
 
 
-fp_in = "/home/theone/Documents/MBA_spectral_sim00/foo*.png"
-fp_out = "/home/theone/Documents/MBA_spectral_movie_sim00_Red.gif"
+fp_in = "/home/theone/Documents/MBA_binary_noise/foo*.png"
+fp_out = "/home/theone/Documents/MBA_binary_noise_movie.gif"
 
 img, *imgs = [Image.open(f) for f in sorted(glob.glob(fp_in))]
 img.save(fp=fp_out, format='GIF', append_images=imgs,
-         save_all=True, duration=700, loop=0)
+         save_all=True, duration=1200, loop=0)
