@@ -150,4 +150,4 @@ fp_out = "/home/theone/Documents/MBA_spectral_movie_sim00_Red.gif"
 
 img, *imgs = [Image.open(f) for f in sorted(glob.glob(fp_in))]
 img.save(fp=fp_out, format='GIF', append_images=imgs,
-         save_all=True, duration=700, loop=0)
+         save_all=True, duration=1200, loop=0)
