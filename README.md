@@ -9,7 +9,7 @@ This folder has the code to customize ResNet Architecture via dictionary config,
 <b>Santa Fe</b>  
 This folder has the python code to create Agent-Based Models based in 2 and 5 state cellular automata.  
 
-<img scr=https://github.com/RubensZimbres/Repo-2022/blob/main/png/MBA_github_noise_movie.gif?raw=true>
+<img src=https://github.com/RubensZimbres/Repo-2022/blob/main/png/MBA_github_noise_movie.gif>
 
 <b>Tensorflow Hub</b>  
 This folder has the code to generate word embeddings using BERT multilingual model from Tensorflow Hub, in the shape (2,768).  
