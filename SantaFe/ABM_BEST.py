@@ -130,6 +130,7 @@ while m>0:
     cbar.ax.tick_params(labelsize='large')
     #ax.set_ylabel('Quality Perception', fontsize=40) 
     #plt.colorbar(nc)
+    plt.axis('off')
     plt.savefig('/home/theone/Documents/MBA_spectral_sim00/foo{}.png'.format(time()))
 
 
