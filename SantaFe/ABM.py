@@ -3,9 +3,10 @@ import networkx as nx
 import itertools
 import matplotlib.pyplot as plt
 import random
+from matplotlib.pyplot import figure, text
 
-clients=np.random.randint(5, size=(1,500))[0]
-pros=np.random.randint(5, size=(1,20))[0]
+clients=np.random.randint(5, size=(1,200))[0]
+pros=np.random.randint(5, size=(1,15))[0]
 
 all=np.concatenate([clients,pros])
 
@@ -92,13 +93,22 @@ output_pros
 
 edges=profs+clientes
 
+nodes=np.arange(0,len(all))
+
 #edges eh lista // nodes eh cada individuo
 
 # nao esta diferenciando clientes de profissionais
 
 G = nx.Graph()
-#G.add_nodes_from(profs)
-G.add_edges_from(e)
-subax1 = plt.subplot(121)
-nx.draw(G, with_labels=True, font_weight='bold')
+G.add_nodes_from(nodes)
+G.add_edges_from(edges)
+pos = nx.spring_layout(G)
+list_degree=list(G.degree()) #this will return a list of tuples each tuple is(node,deg)
+nodes , degree = map(list, zip(*list_degree))
+color_map = ['red' if node > len(clients) else 'blue' for node in G] 
+d = dict(G.degree())
+figure(figsize=(20,16))
+nx.draw(G, with_labels=False, font_weight='light',linewidths=2,width=0.4,node_color=color_map,node_size=[(v * 5)+1 for v in degree])
+for node, (x, y) in pos.items():
+    text(x, y, node, fontsize=d[node], ha='center', va='center')
 plt.show()
