@@ -110,11 +110,11 @@ while m>0:
     pos = nx.spectral_layout(G)
     list_degree=list(G.degree())
     nodes , degree = map(list, zip(*list_degree))
-    color_map = ['red' if node > len(clients) else 'blue' for node in G] 
+    color_map = ['green' if node > len(clients) else 'blue' for node in G] 
     figure(figsize=(20,16))
     d = dict(G.degree())
     frame = np.random.random_integers(0, 5, (len(nodes), len(nodes)))
-    nx.draw(G, with_labels=True, font_weight='light',linewidths=2,width=0.4,node_color=color_map,node_size=[(v * 9)+1 for v in degree])
+    nx.draw(G, with_labels=True, font_weight='light',linewidths=2,width=0.3,node_color=color_map,node_size=[(v * 9)+1 for v in degree])
 
     plt.savefig('/home/theone/Documents/MBA_spectral/foo{}.png'.format(time()))
 #plt.show()
