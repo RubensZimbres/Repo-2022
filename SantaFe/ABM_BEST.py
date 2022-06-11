@@ -14,9 +14,9 @@ import matplotlib as mpl
 
 regra=2159062512564987644819455219116893945895958528152021228705752563807962227809675103689306
 base1=5
-length_clients=180
+length_clients=200
 length_pros=20
-degree_of_similarity=1
+degree_of_similarity=2
 
 clients=np.random.randint(5, size=(1,length_clients))[0]
 pros=np.random.randint(5, size=(1,length_pros))[0]
@@ -120,9 +120,15 @@ while m>0:
     ec = nx.draw_networkx_edges(G, pos, alpha=0.2)
     nc = nx.draw_networkx_nodes(G, pos, nodelist=nodes, node_color=cores, 
                              node_size=100, cmap='RdYIGn')
+    cmap = (mpl.colors.ListedColormap(['red', 'orange', 'yellow', 'green']).with_extremes(over='0.25', under='0.75'))
+
     bounds = [0, 1, 2, 3, 4]
-    norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-    plt.colorbar(mpl.cm.ScalarMappable(cmap=cmap, norm=norm))
+    #norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+    norm = mpl.colors.Normalize(vmin=0, vmax=4)
+    cbar=plt.colorbar(mpl.cm.ScalarMappable(cmap=cmap, norm=norm))
+    cbar.set_label(label='Quality Perception', size='xx-large', weight='bold')
+    cbar.ax.tick_params(labelsize='large')
+    #ax.set_ylabel('Quality Perception', fontsize=40) 
     #plt.colorbar(nc)
     plt.savefig('/home/theone/Documents/MBA_spectral_sim00/foo{}.png'.format(time()))
 
