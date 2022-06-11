@@ -119,12 +119,12 @@ while m>0:
     #nx.draw(G, with_labels=False, font_weight='light',linewidths=2,width=0.3,node_color=cores,node_size=[(v * 7)+1 for v in degree], cmap=plt.cm.jet)
     ec = nx.draw_networkx_edges(G, pos, alpha=0.2)
     nc = nx.draw_networkx_nodes(G, pos, nodelist=nodes, node_color=cores, 
-                             node_size=100, cmap='RdYIGn')
+                             node_size=100, cmap='RdYIGn',node_shape='H')
     cmap = (mpl.colors.ListedColormap(['red', 'orange', 'yellow', 'green']).with_extremes(over='0.25', under='0.75'))
 
     bounds = [0, 1, 2, 3, 4]
     #norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-    norm = mpl.colors.Normalize(vmin=0, vmax=4)
+    norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
     cbar=plt.colorbar(mpl.cm.ScalarMappable(cmap=cmap, norm=norm))
     cbar.set_label(label='Quality Perception', size='xx-large', weight='bold')
     cbar.ax.tick_params(labelsize='large')
