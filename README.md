@@ -6,6 +6,9 @@ In this Python file, I add a cellular automaton to a PyTorch kernel, add a resid
 <b>TF-Keras</b>  
 This folder has the code to customize ResNet Architecture via dictionary config, changing first two layers to receive multispectral images with 9 channels. Final layers are also added, for training and inference.  
   
+<b>Santa Fe</b>  
+This folder has the python code to create Agent-Based Models based in 2 and 5 state cellular automata.  
+  
 <b>Tensorflow Hub</b>  
 This folder has the code to generate word embeddings using BERT multilingual model from Tensorflow Hub, in the shape (2,768).  
   
