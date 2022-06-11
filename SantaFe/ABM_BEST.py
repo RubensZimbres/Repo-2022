@@ -71,8 +71,8 @@ sum_each4=[]
 
 def interact_client(part):
     subject=all[part]
-    most_similar_cli=[i for i in range(0,len(clients)) if np.isclose(subject, clients[i], rtol=1e-05, atol=degree_of_similarity, equal_nan=False)]
-    most_similar_pro=[i for i in range(len(clients),len(all)) if np.isclose(subject, all[i], rtol=1e-05, atol=degree_of_similarity, equal_nan=False)]
+    most_similar_cli=[i for i in range(0,len(clients)) if np.isclose(subject, clients[i], rtol=0.5, atol=degree_of_similarity, equal_nan=False)]
+    most_similar_pro=[i for i in range(len(clients),len(all)) if np.isclose(subject, all[i], rtol=0.5, atol=degree_of_similarity, equal_nan=False)]
     cc=random.choice(most_similar_cli)
     pp=random.choice(most_similar_pro)
     initial_condition=[clients[cc],all[part],all[pp]]
@@ -82,8 +82,8 @@ def interact_client(part):
 
 def interact_pros(part):
     subject2=all[part]
-    most_similar_pros_cli=[i for i in range(0,len(clients)) if np.isclose(subject2, clients[i], rtol=1e-05, atol=degree_of_similarity, equal_nan=False)]
-    most_similar_pros_pro=[i for i in range(len(clients),len(all)) if np.isclose(subject2, all[i], rtol=1e-05, atol=degree_of_similarity, equal_nan=False)]
+    most_similar_pros_cli=[i for i in range(0,len(clients)) if np.isclose(subject2, clients[i], rtol=0.5, atol=degree_of_similarity, equal_nan=False)]
+    most_similar_pros_pro=[i for i in range(len(clients),len(all)) if np.isclose(subject2, all[i], rtol=0.5, atol=degree_of_similarity, equal_nan=False)]
     ccc=random.choice(most_similar_pros_cli)
     ppp=random.choice(most_similar_pros_pro)
     initial_condition=[clients[ccc],all[part],all[ppp]]
@@ -127,21 +127,21 @@ while m>0:
     nodes , degree = map(list, zip(*list_degree))
     mapa=dict(np.transpose(np.array([nodes,all])))
     cores=[]
-    if base1<3:
+    if base1==2:
         for value in list(mapa.values())[0:length_clients]:
-            if value==int(base1/2):
+            if value==1:
                 cores.append('black')
-            if value!=int(base1/2):
+            if value==0:
                 cores.append('gray')
         for value in list(mapa.values())[length_clients:]:
             cores.append('blue')
     else:
         for value in list(mapa.values())[0:length_clients]:
-            if value<int(base1-1/2):
+            if value<3:
                 cores.append('red')
-            if value>int(base1-1/2):
+            if value>3:
                 cores.append('blue')
-            if value==int(base1-1/2):
+            if value==3:
                 cores.append('yellow')
 
         for value in list(mapa.values())[length_clients:]:
