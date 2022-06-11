@@ -14,9 +14,9 @@ import matplotlib as mpl
 import collections
 
 np.random.seed(222)
-regra=30 #2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
+regra=2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
 #2159062512564987644819455219116893945895958528152021228705752563807962227809675103689306
-base1=2 #5
+base1=5
 length_clients=200
 length_pros=20
 degree_of_similarity=2
@@ -107,11 +107,15 @@ while m>0:
     pros=all[length_clients:]
     mean_cli.append(np.mean(clients))
     mean_pro.append(np.mean(pros))
-    sum_each.append(np.transpose(all.count(0)))
-    sum_each1.append(np.transpose(all.count(1)))
-    sum_each2.append(np.transpose(all.count(2)))
-    sum_each3.append(np.transpose(all.count(3)))
-    sum_each4.append(np.transpose(all.count(4)))
+    if base1==2:
+        sum_each.append(np.transpose(all.count(0)))
+        sum_each1.append(np.transpose(all.count(1)))
+    else:
+        sum_each.append(np.transpose(all.count(0)))
+        sum_each1.append(np.transpose(all.count(1)))
+        sum_each2.append(np.transpose(all.count(2)))
+        sum_each3.append(np.transpose(all.count(3)))
+        sum_each4.append(np.transpose(all.count(4)))
     edges=profs+clientes
     nodes=np.arange(0,len(all))
 
@@ -173,11 +177,16 @@ while m>0:
     for line in leg.get_lines():
         line.set_linewidth(3.0)
     plt.subplot(313)
-    plt.plot(sum_each, label='Count of zeros', color='red')
-    plt.plot(sum_each1, label='Count of 1s', color='orange')
-    plt.plot(sum_each2, label='Count of 2s', color='yellow')
-    plt.plot(sum_each3, label='Count of 3s', color='green')
-    plt.plot(sum_each4, label='Count of 4s', color='blue')
+    if base1==2:
+        plt.plot(sum_each, label='Count of zeros', color='red')
+        plt.plot(sum_each1, label='Count of 1s', color='orange')
+    else:
+        plt.plot(sum_each, label='Count of zeros', color='red')
+        plt.plot(sum_each1, label='Count of 1s', color='orange')
+        plt.plot(sum_each2, label='Count of 2s', color='yellow')
+        plt.plot(sum_each3, label='Count of 3s', color='green')
+        plt.plot(sum_each4, label='Count of 4s', color='blue')
+
     leg=plt.legend(fontsize=15)
     for line in leg.get_lines():
         line.set_linewidth(3.0)
