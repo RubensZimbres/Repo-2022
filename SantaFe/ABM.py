@@ -1,9 +1,14 @@
+from ast import While
 import numpy as np
 import networkx as nx
 import itertools
 import matplotlib.pyplot as plt
 import random
 from matplotlib.pyplot import figure, text
+from matplotlib.animation import FuncAnimation
+from time import time
+import glob
+from PIL import Image
 
 clients=np.random.randint(5, size=(1,200))[0]
 pros=np.random.randint(5, size=(1,15))[0]
@@ -86,27 +91,40 @@ rule_of_interaction='similar'
 degree_of_similarity=2
 
 ## LOOP
+m=50
+while m>0:
+    m=m-1
+    output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
+    output_pros=list(map(lambda x: interact_pros(x),range(len(clients),len(all))))
+    all=np.concatenate([output_client,output_pros]).reshape(1,-1)[0]
+    clients=all[0:200]
+    pros=all[200:]
 
-output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
-output_pros=list(map(lambda x: interact_pros(x),range(len(clients),len(all))))
+    edges=profs+clientes
 
-all=np.concatenate([output_client,output_pros]).reshape(1,-1)[0]
-clients=all[0:200]
-pros=all[200:]
+    nodes=np.arange(0,len(all))
 
-edges=profs+clientes
+    G = nx.Graph()
+    G.add_nodes_from(nodes)
+    G.add_edges_from(edges)
+    pos = nx.spectral_layout(G)
+    list_degree=list(G.degree())
+    nodes , degree = map(list, zip(*list_degree))
+    color_map = ['red' if node > len(clients) else 'blue' for node in G] 
+    figure(figsize=(20,16))
+    d = dict(G.degree())
+    frame = np.random.random_integers(0, 5, (len(nodes), len(nodes)))
+    nx.draw(G, with_labels=True, font_weight='light',linewidths=2,width=0.4,node_color=color_map,node_size=[(v * 9)+1 for v in degree])
 
-nodes=np.arange(0,len(all))
+    plt.savefig('/home/theone/Documents/MBA_spectral/foo{}.png'.format(time()))
+#plt.show()
 
 
-G = nx.Graph()
-G.add_nodes_from(nodes)
-G.add_edges_from(edges)
-pos = nx.spring_layout(G)
-list_degree=list(G.degree())
-nodes , degree = map(list, zip(*list_degree))
-color_map = ['red' if node > len(clients) else 'blue' for node in G] 
-figure(figsize=(20,16))
-d = dict(G.degree())
-nx.draw(G, with_labels=True, font_weight='light',linewidths=2,width=0.4,node_color=color_map,node_size=[(v * 9)+1 for v in degree])
-plt.show()
+# filepaths
+fp_in = "/home/theone/Documents/MBA_spectral/foo*.png"
+fp_out = "/home/theone/Documents/MBA_spectral_movie.gif"
+
+# https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html#gif
+img, *imgs = [Image.open(f) for f in sorted(glob.glob(fp_in))]
+img.save(fp=fp_out, format='GIF', append_images=imgs,
+         save_all=True, duration=380, loop=0)
