@@ -91,7 +91,7 @@ def interact_pros(part):
 mean_cli=[]
 mean_pro=[]
 
-m=20
+m=2
 while m>0:
     m=m-1
     output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
@@ -132,15 +132,15 @@ while m>0:
         for value in list(mapa.values())[length_clients:]:
             cores.append('black')
 
-    fig, ax = plt.subplots(figsize=(22, 15))
-    fig.subplots_adjust(bottom=0.5)    
+    fig, ax = plt.subplots(ncols=1, nrows=2,figsize=(15, 15),gridspec_kw={'height_ratios': [3, 1]})
+    #fig.subplots_adjust(bottom=0.5)    
     d = dict(G.degree())
     if base1>=3:
         cmap=mpl.cm.get_cmap('jet_r')
     else:
         cmap=mpl.cm.get_cmap('gray_r')
     #nx.draw(G, with_labels=False, font_weight='light',linewidths=2,width=0.3,node_color=cores,node_size=[(v * 7)+1 for v in degree], cmap=plt.cm.jet)
-    plt.subplot(221)
+    plt.subplot(211)
     ec = nx.draw_networkx_edges(G, pos, alpha=0.2)
     nc = nx.draw_networkx_nodes(G, pos, nodelist=nodes, node_color=cores, 
                              node_size=[(v * 7)+1 for v in degree], cmap=cmap,node_shape='H')
@@ -155,10 +155,11 @@ while m>0:
     #ax.set_ylabel('Quality Perception', fontsize=40) 
     #plt.colorbar(nc)
     plt.axis('off')
-    plt.subplot(223)
+    plt.subplot(212)
     plt.plot(mean_cli, color='green', label='Clients average perception')
     plt.plot(mean_pro, color='black', label='Professionals average perception')
     plt.legend()
+    plt.tight_layout()
     plt.savefig('/home/theone/Documents/MBA_binary_noise/foo{}.png'.format(time()))
 
 
