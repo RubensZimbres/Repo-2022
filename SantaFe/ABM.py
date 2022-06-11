@@ -85,19 +85,19 @@ rule_of_interaction='similar'
 
 degree_of_similarity=2
 
-output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
-output_client
+## LOOP
 
+output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
 output_pros=list(map(lambda x: interact_pros(x),range(len(clients),len(all))))
-output_pros
+
+all=np.concatenate([output_client,output_pros]).reshape(1,-1)[0]
+clients=all[0:200]
+pros=all[200:]
 
 edges=profs+clientes
 
 nodes=np.arange(0,len(all))
 
-#edges eh lista // nodes eh cada individuo
-
-# nao esta diferenciando clientes de profissionais
 
 G = nx.Graph()
 G.add_nodes_from(nodes)
@@ -109,6 +109,4 @@ color_map = ['red' if node > len(clients) else 'blue' for node in G]
 figure(figsize=(20,16))
 d = dict(G.degree())
 nx.draw(G, with_labels=True, font_weight='light',linewidths=2,width=0.4,node_color=color_map,node_size=[(v * 9)+1 for v in degree])
-#for node, (x, y) in pos.items():
-#    text(x, y, node, fontsize=d[node], ha='center', va='center')
 plt.show()
