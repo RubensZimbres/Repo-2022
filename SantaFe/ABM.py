@@ -103,12 +103,12 @@ G = nx.Graph()
 G.add_nodes_from(nodes)
 G.add_edges_from(edges)
 pos = nx.spring_layout(G)
-list_degree=list(G.degree()) #this will return a list of tuples each tuple is(node,deg)
+list_degree=list(G.degree())
 nodes , degree = map(list, zip(*list_degree))
 color_map = ['red' if node > len(clients) else 'blue' for node in G] 
-d = dict(G.degree())
 figure(figsize=(20,16))
-nx.draw(G, with_labels=False, font_weight='light',linewidths=2,width=0.4,node_color=color_map,node_size=[(v * 5)+1 for v in degree])
-for node, (x, y) in pos.items():
-    text(x, y, node, fontsize=d[node], ha='center', va='center')
+d = dict(G.degree())
+nx.draw(G, with_labels=True, font_weight='light',linewidths=2,width=0.4,node_color=color_map,node_size=[(v * 9)+1 for v in degree])
+#for node, (x, y) in pos.items():
+#    text(x, y, node, fontsize=d[node], ha='center', va='center')
 plt.show()
