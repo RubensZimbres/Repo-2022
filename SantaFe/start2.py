@@ -7,6 +7,13 @@ import random
 clients=np.random.randint(5, size=(1,500))[0]
 pros=np.random.randint(5, size=(1,20))[0]
 
+all=np.concatenate([clients,pros])
+
+
+all[0:len(clients)]
+len(all[len(clients):])==len(pros)
+
+
 print(clients)
 print(pros)
 
@@ -49,26 +56,26 @@ clientes=[]
 profs=[]
 
 def interact_client(part):
-    subject=clients[part]
+    subject=all[part]
     most_similar_cli=[i for i in range(0,len(clients)) if np.isclose(subject, clients[i], rtol=1e-05, atol=degree_of_similarity, equal_nan=False)]
-    most_similar_pro=[i for i in range(0,len(pros)) if np.isclose(subject, pros[i], rtol=1e-05, atol=degree_of_similarity, equal_nan=False)]
+    most_similar_pro=[i for i in range(len(clients),len(all)) if np.isclose(subject, all[i], rtol=1e-05, atol=degree_of_similarity, equal_nan=False)]
     cc=random.choice(most_similar_cli)
     pp=random.choice(most_similar_pro)
-    initial_condition=[clients[cc],clients[part],pros[pp]]
-    clientes.append([clients[part],clients[cc]])
-    clientes.append([clients[part],pros[pp]])
+    initial_condition=[clients[cc],all[part],all[pp]]
+    clientes.append([part,cc])
+    clientes.append([part,pp])
     #print(initial_condition)
     return cellular_automaton(initial_condition)
 
 def interact_pros(part):
-    subject2=pros[part]
+    subject2=all[part]
     most_similar_pros_cli=[i for i in range(0,len(clients)) if np.isclose(subject2, clients[i], rtol=1e-05, atol=degree_of_similarity, equal_nan=False)]
-    most_similar_pros_pro=[i for i in range(0,len(pros)) if np.isclose(subject2, pros[i], rtol=1e-05, atol=degree_of_similarity, equal_nan=False)]
+    most_similar_pros_pro=[i for i in range(len(clients),len(all)) if np.isclose(subject2, all[i], rtol=1e-05, atol=degree_of_similarity, equal_nan=False)]
     ccc=random.choice(most_similar_pros_cli)
     ppp=random.choice(most_similar_pros_pro)
-    initial_condition=[clients[ccc],pros[part],pros[ppp]]
-    profs.append([pros[part],pros[ppp]])
-    profs.append([pros[part],clients[ccc]])
+    initial_condition=[clients[ccc],all[part],all[ppp]]
+    profs.append([part,ppp])
+    profs.append([part,ccc])
     #print(initial_condition)
     return cellular_automaton(initial_condition)
 
@@ -80,15 +87,17 @@ degree_of_similarity=2
 output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
 output_client
 
-output_pros=list(map(lambda x: interact_pros(x),range(0,len(pros))))
+output_pros=list(map(lambda x: interact_pros(x),range(len(clients),len(all))))
 output_pros
 
-e=profs
+edges=profs+clientes
 
-clientes
+#edges eh lista // nodes eh cada individuo
+
+# nao esta diferenciando clientes de profissionais
 
 G = nx.Graph()
-
+#G.add_nodes_from(profs)
 G.add_edges_from(e)
 subax1 = plt.subplot(121)
 nx.draw(G, with_labels=True, font_weight='bold')
