@@ -11,6 +11,7 @@ import glob
 from PIL import Image
 from itertools import count
 import matplotlib as mpl
+import collections
 
 np.random.seed(222)
 regra=30 #2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
@@ -62,6 +63,11 @@ def cellular_automaton(kernel):
 
 clientes=[]
 profs=[]
+sum_each=[]
+sum_each1=[]
+sum_each2=[]
+sum_each3=[]
+sum_each4=[]
 
 def interact_client(part):
     subject=all[part]
@@ -91,7 +97,7 @@ def interact_pros(part):
 mean_cli=[]
 mean_pro=[]
 
-m=2
+m=80
 while m>0:
     m=m-1
     output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
@@ -101,6 +107,11 @@ while m>0:
     pros=all[length_clients:]
     mean_cli.append(np.mean(clients))
     mean_pro.append(np.mean(pros))
+    sum_each.append(np.transpose(all.count(0)))
+    sum_each1.append(np.transpose(all.count(1)))
+    sum_each2.append(np.transpose(all.count(2)))
+    sum_each3.append(np.transpose(all.count(3)))
+    sum_each4.append(np.transpose(all.count(4)))
     edges=profs+clientes
     nodes=np.arange(0,len(all))
 
@@ -132,7 +143,7 @@ while m>0:
         for value in list(mapa.values())[length_clients:]:
             cores.append('black')
 
-    fig, ax = plt.subplots(ncols=1, nrows=2,figsize=(15, 15),gridspec_kw={'height_ratios': [3, 1]})
+    fig, ax = plt.subplots(ncols=1, nrows=3,figsize=(15, 15),gridspec_kw={'height_ratios': [3, 1,1]})
     #fig.subplots_adjust(bottom=0.5)    
     d = dict(G.degree())
     if base1>=3:
@@ -140,7 +151,7 @@ while m>0:
     else:
         cmap=mpl.cm.get_cmap('gray_r')
     #nx.draw(G, with_labels=False, font_weight='light',linewidths=2,width=0.3,node_color=cores,node_size=[(v * 7)+1 for v in degree], cmap=plt.cm.jet)
-    plt.subplot(211)
+    plt.subplot(311)
     ec = nx.draw_networkx_edges(G, pos, alpha=0.2)
     nc = nx.draw_networkx_nodes(G, pos, nodelist=nodes, node_color=cores, 
                              node_size=[(v * 7)+1 for v in degree], cmap=cmap,node_shape='H')
@@ -155,9 +166,12 @@ while m>0:
     #ax.set_ylabel('Quality Perception', fontsize=40) 
     #plt.colorbar(nc)
     plt.axis('off')
-    plt.subplot(212)
-    plt.plot(mean_cli, color='green', label='Clients average perception')
-    plt.plot(mean_pro, color='black', label='Professionals average perception')
+    plt.subplot(312)
+    plt.plot(mean_cli, color='red', label='Clients average perception')
+    plt.plot(mean_pro, color='blue', label='Professionals average perception')
+    plt.legend()
+    plt.subplot(313)
+    plt.plot(sum_each, label='Count of zerosblue')
     plt.legend()
     plt.tight_layout()
     plt.savefig('/home/theone/Documents/MBA_binary_noise/foo{}.png'.format(time()))
