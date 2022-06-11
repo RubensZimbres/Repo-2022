@@ -13,9 +13,9 @@ from itertools import count
 import matplotlib as mpl
 
 np.random.seed(222)
-regra=232 #2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
+regra=2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
 #2159062512564987644819455219116893945895958528152021228705752563807962227809675103689306
-base1=2 #5
+base1=5
 length_clients=200
 length_pros=20
 degree_of_similarity=2
@@ -121,7 +121,7 @@ while m>0:
                 cores.append('yellow')
 
     for value in list(mapa.values())[length_clients:]:
-        cores.append('gray')
+        cores.append('black')
 
     fig, ax = plt.subplots(figsize=(22, 19))
     fig.subplots_adjust(bottom=0.5)    
