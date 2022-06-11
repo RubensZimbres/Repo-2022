@@ -88,7 +88,7 @@ def interact_pros(part):
 
 rule_of_interaction='similar'
 
-degree_of_similarity=2
+degree_of_similarity=0
 
 ## LOOP
 m=50
@@ -113,18 +113,15 @@ while m>0:
     color_map = ['green' if node > len(clients) else 'blue' for node in G] 
     figure(figsize=(20,16))
     d = dict(G.degree())
-    frame = np.random.random_integers(0, 5, (len(nodes), len(nodes)))
+    
     nx.draw(G, with_labels=True, font_weight='light',linewidths=2,width=0.3,node_color=color_map,node_size=[(v * 9)+1 for v in degree])
 
-    plt.savefig('/home/theone/Documents/MBA_spectral/foo{}.png'.format(time()))
-#plt.show()
+    plt.savefig('/home/theone/Documents/MBA_spectral_sim0/foo{}.png'.format(time()))
 
 
-# filepaths
-fp_in = "/home/theone/Documents/MBA_spectral/foo*.png"
-fp_out = "/home/theone/Documents/MBA_spectral_movie.gif"
+fp_in = "/home/theone/Documents/MBA_spectral_sim0/foo*.png"
+fp_out = "/home/theone/Documents/MBA_spectral_movie_sim0.gif"
 
-# https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html#gif
 img, *imgs = [Image.open(f) for f in sorted(glob.glob(fp_in))]
 img.save(fp=fp_out, format='GIF', append_images=imgs,
-         save_all=True, duration=380, loop=0)
+         save_all=True, duration=700, loop=0)
