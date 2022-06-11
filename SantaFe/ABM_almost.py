@@ -118,8 +118,8 @@ while m>0:
             cores.append('green')
         if value==2:
             cores.append('yellow')
-    for key in list(mapa.keys())[200:]:
-        cores.append('red')
+    for value in list(mapa.values())[200:]:
+        cores.append('blue')
 
     
     #color_map = ['green' if node > len(clients) else 'blue' for node in G] 
