@@ -139,10 +139,11 @@ def interact_pros(part):
 
 mean_cli=[]
 mean_pro=[]
-
-m=35
-while m>0:
-    m=m-1
+degree_c=[]
+closeness=[]
+iterations=80
+while iterations>0:
+    iterations=iterations-1
     output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
     output_pros=list(map(lambda x: interact_pros(x),range(len(clients),len(all))))
     all=[int(i*1-environment_noise) for i in np.concatenate([output_client,output_pros]).reshape(1,-1)[0]]
@@ -192,8 +193,13 @@ while m>0:
 
         for value in list(mapa.values())[length_clients:]:
             cores.append('black')
-
-    fig, ax = plt.subplots(ncols=1, nrows=3,figsize=(11, 11),gridspec_kw={'height_ratios': [3, 1,1]})
+    degree_central=nx.degree_centrality(G)
+    degree_c.append(np.mean(list(degree_central.values())))
+    #Degree centrality assigns an importance score based simply on the number of links held by each node.
+    closeness_central=nx.closeness_centrality(G)
+    closeness.append(np.mean(list(closeness_central.values())))
+    #Closeness centrality scores each node based on their ‘closeness’ to all other nodes in the network.
+    fig, ax = plt.subplots(ncols=1, nrows=5,figsize=(11, 17),gridspec_kw={'height_ratios': [3, 1.5,1.5,1.5,1.5]})
     #fig.subplots_adjust(bottom=0.5)    
     d = dict(G.degree())
     if base1>=3:
@@ -201,7 +207,7 @@ while m>0:
     else:
         cmap=mpl.cm.get_cmap('gray_r')
     #nx.draw(G, with_labels=False, font_weight='light',linewidths=2,width=0.3,node_color=cores,node_size=[(v * 7)+1 for v in degree], cmap=plt.cm.jet)
-    plt.subplot(311)
+    plt.subplot(511)
     ec = nx.draw_networkx_edges(G, pos, alpha=0.2)
     nc = nx.draw_networkx_nodes(G, pos, nodelist=nodes, node_color=cores, 
                              node_size=[(v * 6) for v in degree], cmap=cmap,node_shape='H')
@@ -216,13 +222,13 @@ while m>0:
     #ax.set_ylabel('Quality Perception', fontsize=40) 
     #plt.colorbar(nc)
     plt.axis('off')
-    plt.subplot(312)
+    plt.subplot(512)
     plt.plot(mean_cli, color='red', label='Clients average perception')
     plt.plot(mean_pro, color='blue', label='Professionals average perception')
-    leg=plt.legend(fontsize=15)
+    leg=plt.legend(fontsize=12,loc = "upper left")
     for line in leg.get_lines():
         line.set_linewidth(3.0)
-    plt.subplot(313)
+    plt.subplot(513)
     if base1==2:
         plt.plot(sum_each, label='Count of zeros', color='red')
         plt.plot(sum_each1, label='Count of 1s', color='orange')
@@ -233,7 +239,17 @@ while m>0:
         plt.plot(sum_each3, label='Count of 3s', color='green')
         plt.plot(sum_each4, label='Count of 4s', color='blue')
 
-    leg=plt.legend(fontsize=15)
+    leg=plt.legend(fontsize=12,loc = "upper left")
+    for line in leg.get_lines():
+        line.set_linewidth(3.0)
+    plt.subplot(514)
+    plt.plot(degree_c, color='black', label='Degree centrality (average # links)')
+    leg=plt.legend(fontsize=12,loc = "upper left")
+    for line in leg.get_lines():
+        line.set_linewidth(3.0)
+    plt.subplot(515)
+    plt.plot(closeness, color='green', label='Closeness centrality (average distance)')
+    leg=plt.legend(fontsize=12,loc = "upper left")
     for line in leg.get_lines():
         line.set_linewidth(3.0)
 
@@ -242,7 +258,7 @@ while m>0:
 
 
 fp_in = "/home/theone/Documents/MBA_binary_noise/foo*.png"
-fp_out = "/home/theone/Documents/MBA_github_noise_movie.gif"
+fp_out = "/home/theone/Documents/MBA_github_completo.gif"
 
 img, *imgs = [Image.open(f) for f in sorted(glob.glob(fp_in))]
 img.save(fp=fp_out, format='GIF', append_images=imgs,
