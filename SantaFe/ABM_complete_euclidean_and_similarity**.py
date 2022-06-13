@@ -153,7 +153,8 @@ mean_pro=[]
 degree_c=[]
 closeness=[]
 
-iterations=40
+iter=40
+iterations=iter
 
 while iterations>0:
     try:
@@ -173,7 +174,7 @@ while iterations>0:
             sum_each2.append(np.transpose(all.count(2)))
             sum_each3.append(np.transpose(all.count(3)))
             sum_each4.append(np.transpose(all.count(4)))
-        if iterations==34:
+        if iterations==iter:
             edges=edges0
         else:
             edges=profs+clientes
@@ -212,7 +213,7 @@ while iterations>0:
         closeness_central=nx.closeness_centrality(G)
         closeness.append(np.mean(list(closeness_central.values())))
         #Closeness centrality scores each node based on their ‘closeness’ to all other nodes in the network.
-        fig, ax = plt.subplots(ncols=1, nrows=5,figsize=(11, 17),gridspec_kw={'height_ratios': [3, 1.5,1.5,1.5,1.5]})
+        fig, ax = plt.subplots(ncols=1, nrows=5,figsize=(11, 17),gridspec_kw={'height_ratios': [3, 1.2,1.2,1.2,1.2]})
         d = dict(G.degree())
         if base1>=3:
             cmap=mpl.cm.get_cmap('jet_r')
