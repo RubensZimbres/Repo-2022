@@ -141,109 +141,120 @@ def interact_pros(part):
 mean_cli=[]
 mean_pro=[]
 
-m=35
-while m>0:
-    m=m-1
-    output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
-    output_pros=list(map(lambda x: interact_pros(x),range(len(clients),len(all))))
-    all=[int(i*1-environment_noise) for i in np.concatenate([output_client,output_pros]).reshape(1,-1)[0]]
-    clients=all[0:length_clients]
-    pros=all[length_clients:]
-    mean_cli.append(np.mean(clients))
-    mean_pro.append(np.mean(pros))
-    if base1==2:
-        sum_each.append(np.transpose(all.count(0)))
-        sum_each1.append(np.transpose(all.count(1)))
-    else:
-        sum_each.append(np.transpose(all.count(0)))
-        sum_each1.append(np.transpose(all.count(1)))
-        sum_each2.append(np.transpose(all.count(2)))
-        sum_each3.append(np.transpose(all.count(3)))
-        sum_each4.append(np.transpose(all.count(4)))
-    if m==34:
-        edges=edges0
-    else:
-        edges=profs+clientes
-    nodes=np.arange(0,len(all))
+iterations=3
 
-    G = nx.from_pandas_edgelist(df2, 'from2', 'to2') #nx.Graph()
-    G.add_nodes_from(nodes)
-    G.add_edges_from(edges)
-    #pos = nx.spectral_layout(G)
-    list_degree=list(G.degree())
-    nodes , degree = map(list, zip(*list_degree))
-    mapa=dict(np.transpose(np.array([nodes,all])))
-    cores=[]
-    if base1==2:
-        for value in list(mapa.values())[0:length_clients]:
-            if value==1:
-                cores.append('black')
-            if value==0:
+while iterations>0:
+    iterations=iterations-1
+    try:
+        output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
+        output_pros=list(map(lambda x: interact_pros(x),range(len(clients),len(all))))
+        all=[int(i*1-environment_noise) for i in np.concatenate([output_client,output_pros]).reshape(1,-1)[0]]
+        clients=all[0:length_clients]
+        pros=all[length_clients:]
+        mean_cli.append(np.mean(clients))
+        mean_pro.append(np.mean(pros))
+        if base1==2:
+            sum_each.append(np.transpose(all.count(0)))
+            sum_each1.append(np.transpose(all.count(1)))
+        else:
+            sum_each.append(np.transpose(all.count(0)))
+            sum_each1.append(np.transpose(all.count(1)))
+            sum_each2.append(np.transpose(all.count(2)))
+            sum_each3.append(np.transpose(all.count(3)))
+            sum_each4.append(np.transpose(all.count(4)))
+        if iterations==34:
+            edges=edges0
+        else:
+            edges=profs+clientes
+        nodes=np.arange(0,len(all))
+
+        G = nx.from_pandas_edgelist(df2, 'from2', 'to2') #nx.Graph()
+        G.add_nodes_from(nodes)
+        G.add_edges_from(edges)
+        #pos = nx.spectral_layout(G)
+        list_degree=list(G.degree())
+        nodes , degree = map(list, zip(*list_degree))
+        mapa=dict(np.transpose(np.array([nodes,all])))
+        cores=[]
+        if base1==2:
+            for value in list(mapa.values())[0:length_clients]:
+                if value==1:
+                    cores.append('blue')
+                if value==0:
+                    cores.append('red')
+            for value in list(mapa.values())[length_clients:]:
                 cores.append('gray')
-        for value in list(mapa.values())[length_clients:]:
-            cores.append('blue')
-    else:
-        for value in list(mapa.values())[0:length_clients]:
-            if value<3:
-                cores.append('red')
-            if value>3:
-                cores.append('blue')
-            if value==3:
-                cores.append('yellow')
+        else:
+            for value in list(mapa.values())[0:length_clients]:
+                if value<3:
+                    cores.append('red')
+                if value>3:
+                    cores.append('blue')
+                if value==3:
+                    cores.append('yellow')
 
-        for value in list(mapa.values())[length_clients:]:
-            cores.append('black')
+            for value in list(mapa.values())[length_clients:]:
+                cores.append('black')
+        degree_central=nx.degree_centrality(G)
+        degree_c.append(np.mean(list(degree_central.values())))
+        #Degree centrality assigns an importance score based simply on the number of links held by each node.
+        closeness_central=nx.closeness_centrality(G)
+        closeness.append(np.mean(list(closeness_central.values())))
+        #Closeness centrality scores each node based on their ‘closeness’ to all other nodes in the network.
+        fig, ax = plt.subplots(ncols=1, nrows=5,figsize=(11, 17),gridspec_kw={'height_ratios': [3, 1.5,1.5,1.5,1.5]})
+        d = dict(G.degree())
+        if base1>=3:
+            cmap=mpl.cm.get_cmap('jet_r')
+        else:
+            cmap=mpl.cm.get_cmap('jet_r')
+        plt.subplot(511)
+        ec = nx.draw_networkx_edges(G, pos, alpha=0.1)
+        nc = nx.draw_networkx_nodes(G, pos, nodelist=nodes, node_color=cores, 
+                                node_size=20, cmap=cmap,node_shape='o')
+                                #node_size=[(v.value()*3) for v in degree_central], cmap=cmap,node_shape='o')
+        norm = mpl.colors.Normalize(vmin=0, vmax=4)
+        cbar=plt.colorbar(mpl.cm.ScalarMappable(cmap=cmap, norm=norm))
+        cbar.set_label(label='Quality Perception', size='xx-large', weight='bold')
+        cbar.ax.tick_params(labelsize='large')
+        plt.axis('off')
+        plt.subplot(512)
+        plt.plot(mean_cli, color='red', label='Clients average perception')
+        plt.plot(mean_pro, color='blue', label='Professionals average perception')
+        leg=plt.legend(fontsize=12,loc = "upper left")
+        for line in leg.get_lines():
+            line.set_linewidth(3.0)
+        plt.subplot(513)
+        if base1==2:
+            plt.plot(sum_each, label='Count of zeros', color='red')
+            plt.plot(sum_each1, label='Count of 1s', color='orange')
+        else:
+            plt.plot(sum_each, label='Count of zeros', color='red')
+            plt.plot(sum_each1, label='Count of 1s', color='orange')
+            plt.plot(sum_each2, label='Count of 2s', color='yellow')
+            plt.plot(sum_each3, label='Count of 3s', color='green')
+            plt.plot(sum_each4, label='Count of 4s', color='blue')
 
-    fig, ax = plt.subplots(ncols=1, nrows=3,figsize=(11, 11),gridspec_kw={'height_ratios': [3, 1,1]})
-    #fig.subplots_adjust(bottom=0.5)    
-    d = dict(G.degree())
-    if base1>=3:
-        cmap=mpl.cm.get_cmap('jet_r')
-    else:
-        cmap=mpl.cm.get_cmap('gray_r')
-    #nx.draw(G, with_labels=False, font_weight='light',linewidths=2,width=0.3,node_color=cores,node_size=[(v * 7)+1 for v in degree], cmap=plt.cm.jet)
-    plt.subplot(311)
-    ec = nx.draw_networkx_edges(G, pos, alpha=0.2)
-    nc = nx.draw_networkx_nodes(G, pos, nodelist=nodes, node_color=cores, 
-                             node_size=[(v * 6) for v in degree], cmap=cmap,node_shape='H')
-    #cmap = (mpl.colors.ListedColormap(['red', 'orange', 'yellow', 'green']).with_extremes(over='0.25', under='0.75'))
+        leg=plt.legend(fontsize=12,loc = "upper left")
+        for line in leg.get_lines():
+            line.set_linewidth(3.0)
+        plt.subplot(514)
+        plt.plot(degree_c, color='black', label='Degree centrality (average # links)')
+        leg=plt.legend(fontsize=12,loc = "upper left")
+        for line in leg.get_lines():
+            line.set_linewidth(3.0)
+        plt.subplot(515)
+        plt.plot(closeness, color='green', label='Closeness centrality (average closeness)')
+        leg=plt.legend(fontsize=12,loc = "upper left")
+        for line in leg.get_lines():
+            line.set_linewidth(3.0)
 
-    #bounds = [0, 1, 2, 3, 4]
-    #norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-    norm = mpl.colors.Normalize(vmin=0, vmax=4)
-    cbar=plt.colorbar(mpl.cm.ScalarMappable(cmap=cmap, norm=norm))
-    cbar.set_label(label='Quality Perception', size='xx-large', weight='bold')
-    cbar.ax.tick_params(labelsize='large')
-    #ax.set_ylabel('Quality Perception', fontsize=40) 
-    #plt.colorbar(nc)
-    plt.axis('off')
-    plt.subplot(312)
-    plt.plot(mean_cli, color='red', label='Clients average perception')
-    plt.plot(mean_pro, color='blue', label='Professionals average perception')
-    leg=plt.legend(fontsize=15)
-    for line in leg.get_lines():
-        line.set_linewidth(3.0)
-    plt.subplot(313)
-    if base1==2:
-        plt.plot(sum_each, label='Count of zeros', color='red')
-        plt.plot(sum_each1, label='Count of 1s', color='orange')
-    else:
-        plt.plot(sum_each, label='Count of zeros', color='red')
-        plt.plot(sum_each1, label='Count of 1s', color='orange')
-        plt.plot(sum_each2, label='Count of 2s', color='yellow')
-        plt.plot(sum_each3, label='Count of 3s', color='green')
-        plt.plot(sum_each4, label='Count of 4s', color='blue')
-
-    leg=plt.legend(fontsize=15)
-    for line in leg.get_lines():
-        line.set_linewidth(3.0)
-
-    plt.tight_layout()
-    plt.savefig('/home/theone/Documents/MBA_binary_noise/foo{}.png'.format(time()))
-
+        plt.tight_layout()
+        plt.savefig('/home/theone/Documents/MBA_binary_noise/foo{}.png'.format(time()))
+    except:
+        pass
 
 fp_in = "/home/theone/Documents/MBA_binary_noise/foo*.png"
-fp_out = "/home/theone/Documents/MBA_github_noise_movie.gif"
+fp_out = "/home/theone/Documents/MBA_github_completo_30.gif"
 
 img, *imgs = [Image.open(f) for f in sorted(glob.glob(fp_in))]
 img.save(fp=fp_out, format='GIF', append_images=imgs,
