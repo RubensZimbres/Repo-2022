@@ -16,9 +16,9 @@ import pandas as pd
 import random
 
 np.random.seed(222)
-regra=30 #2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
+regra=2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
 #2159062512564987644819455219116893945895958528152021228705752563807962227809675103689306
-base1=2 #5
+base1=5
 length_clients=280
 length_pros=25
 degree_of_similarity=2
@@ -101,13 +101,21 @@ sum_each2=[]
 sum_each3=[]
 sum_each4=[]
 
+def distances(a,list):
+    out=[]
+    for o in list:
+        out.append(np.linalg.norm(a-o))
+    return out
+    
 
+part=13
 def interact_client(part):
     subject=all[part]
     most_similar_cli=[i for i in range(0,len(clients)) if np.isclose(subject, clients[i], rtol=0.5, atol=degree_of_similarity, equal_nan=False)]
     most_similar_pro=[i for i in range(len(clients),len(all)) if np.isclose(subject, all[i], rtol=0.5, atol=degree_of_similarity, equal_nan=False)]
     ## saber com quem esta interagindo
-    
+    cc=np.where(distances(coordinates[part],coordinates[most_similar_cli])==np.min(distances(coordinates[part],coordinates[most_similar_cli])))[0]
+    pp=np.where(distances(coordinates[part],coordinates[most_similar_pro])==np.min(distances(coordinates[part],coordinates[most_similar_pro])))[0]
     cc=random.choice(most_similar_cli)
     pp=random.choice(most_similar_pro)
     initial_condition=[clients[cc],all[part],all[pp]]
@@ -124,6 +132,8 @@ def interact_pros(part):
     subject2=all[part]
     most_similar_pros_cli=[i for i in range(0,len(clients)) if np.isclose(subject2, clients[i], rtol=0.5, atol=degree_of_similarity, equal_nan=False)]
     most_similar_pros_pro=[i for i in range(len(clients),len(all)) if np.isclose(subject2, all[i], rtol=0.5, atol=degree_of_similarity, equal_nan=False)]
+    ccc=np.where(distances(coordinates[part],coordinates[most_similar_pros_cli])==np.min(distances(coordinates[part],coordinates[most_similar_pros_cli])))[0]
+    ppp=np.where(distances(coordinates[part],coordinates[most_similar_pros_pro])==np.min(distances(coordinates[part],coordinates[most_similar_pros_pro])))[0]
     ccc=random.choice(most_similar_pros_cli)
     ppp=random.choice(most_similar_pros_pro)
     initial_condition=[clients[ccc],all[part],all[ppp]]
