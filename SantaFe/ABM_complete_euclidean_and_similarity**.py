@@ -156,7 +156,6 @@ closeness=[]
 iterations=40
 
 while iterations>0:
-    iterations=iterations-1
     try:
         output_client=list(map(lambda x: interact_client(x),range(0,len(clients))))
         output_pros=list(map(lambda x: interact_pros(x),range(len(clients),len(all))))
@@ -262,6 +261,7 @@ while iterations>0:
 
         plt.tight_layout()
         plt.savefig('/home/theone/Documents/MBA_output/foo{}.png'.format(time()))
+        iterations=iterations-1
     except:
         pass
 
