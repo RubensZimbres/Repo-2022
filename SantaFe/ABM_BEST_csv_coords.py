@@ -115,7 +115,7 @@ def interact_client(part):
     clientes.append([part,pp])
     cc2=np.arange(0,len(clients))[cc]
     pp2=np.arange(0,len(all))[pp]
-    coord_update=np.mean([coordinates[part],coordinates[cc2],coordinates[pp2]],axis=0)
+    coord_update=np.mean([coordinates[part],np.mean(coordinates[most_similar_cli])],axis=0)
     pos.update({part: coord_update})
 
     return cellular_automaton(initial_condition)
@@ -131,7 +131,7 @@ def interact_pros(part):
     profs.append([part,ccc])
     ccc2=np.arange(0,len(clients))[ccc]
     ppp2=np.arange(0,len(all))[ppp]
-    coord_update=np.mean([coordinates[part],coordinates[ccc2],coordinates[ppp2]],axis=0)
+    coord_update=np.mean([coordinates[part],np.mean(coordinates[most_similar_pros_pro])],axis=0)
     pos.update({part: coord_update})
     return cellular_automaton(initial_condition)
 
@@ -141,7 +141,7 @@ def interact_pros(part):
 mean_cli=[]
 mean_pro=[]
 
-iterations=3
+iterations=10
 
 while iterations>0:
     iterations=iterations-1
