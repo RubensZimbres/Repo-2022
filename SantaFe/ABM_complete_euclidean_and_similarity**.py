@@ -219,10 +219,9 @@ while iterations>0:
         else:
             cmap=mpl.cm.get_cmap('jet_r')
         plt.subplot(511)
+        #tamanhos=[v*100 for v in degree_central.values()]
         ec = nx.draw_networkx_edges(G, pos, alpha=0.1)
-        nc = nx.draw_networkx_nodes(G, pos, nodelist=nodes, node_color=cores, 
-                                node_size=20, cmap=cmap,node_shape='o')
-                                #node_size=[(v.value()*3) for v in degree_central], cmap=cmap,node_shape='o')
+        nc = nx.draw_networkx_nodes(G, pos, nodelist=nodes, node_color=cores, node_size=38, cmap=cmap)
         norm = mpl.colors.Normalize(vmin=0, vmax=4)
         cbar=plt.colorbar(mpl.cm.ScalarMappable(cmap=cmap, norm=norm))
         cbar.set_label(label='Quality Perception', size='xx-large', weight='bold')
