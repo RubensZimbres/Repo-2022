@@ -16,9 +16,9 @@ import pandas as pd
 import random
 
 np.random.seed(222)
-regra=30# 2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
+regra=2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
 #2159062512564987644819455219116893945895958528152021228705752563807962227809675103689306
-base1=2 #5
+base1=5
 length_clients=280
 length_pros=25
 degree_of_similarity=2
@@ -140,8 +140,10 @@ def interact_pros(part):
 
 mean_cli=[]
 mean_pro=[]
+degree_c=[]
+closeness=[]
 
-iterations=10
+iterations=40
 
 while iterations>0:
     iterations=iterations-1
@@ -249,12 +251,12 @@ while iterations>0:
             line.set_linewidth(3.0)
 
         plt.tight_layout()
-        plt.savefig('/home/theone/Documents/MBA_binary_noise/foo{}.png'.format(time()))
+        plt.savefig('/home/theone/Documents/MBA_output/foo{}.png'.format(time()))
     except:
         pass
 
-fp_in = "/home/theone/Documents/MBA_binary_noise/foo*.png"
-fp_out = "/home/theone/Documents/MBA_github_completo_30.gif"
+fp_in = "/home/theone/Documents/MBA_output/foo*.png"
+fp_out = "/home/theone/Documents/MBA_github_completo_30_try.gif"
 
 img, *imgs = [Image.open(f) for f in sorted(glob.glob(fp_in))]
 img.save(fp=fp_out, format='GIF', append_images=imgs,
