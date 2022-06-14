@@ -17,9 +17,9 @@ import pandas as pd
 import random
 
 np.random.seed(222)
-regra=126 #2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
+regra=2159062512564987644819455219116893945895958528152021228705752563807959237655911950549124 #thesis
 #2159062512564987644819455219116893945895958528152021228705752563807962227809675103689306
-base1=2 #5
+base1=5
 length_clients=370
 length_pros=30
 degree_of_similarity=2
@@ -72,17 +72,14 @@ G = nx.Graph() #nx.from_pandas_edgelist(df2, 'from2', 'to2') #
 G.add_nodes_from(nodes)
 G.add_edges_from(edges0)
 
+individuals=np.arange(0,len(all))
+
 x=np.random.uniform(-1, 1, len(all))
 y=x=np.random.uniform(-1, 1, len(all))
 
 coordinates=np.array([x,y]).reshape(-1,2)
 
-individuals=np.arange(0,len(all))
-
 pos=dict(zip(individuals,coordinates))
-
-#pos = nx.circular_layout(G)
-#coordinates=np.concatenate(list(pos.values())).reshape(-1,2)
 
 
 
@@ -122,13 +119,16 @@ sum_each1=[]
 sum_each2=[]
 sum_each3=[]
 sum_each4=[]
+coord_update=np.zeros(len(individuals))
+
 
 def distances(a,list):
     out=[]
     for o in list:
         out.append(np.linalg.norm(a-o))
     return out
-    
+
+
 def interact_client(part):
     subject=all[part]
     most_similar_cli=[i for i in range(0,len(clients)) if np.isclose(subject, clients[i], rtol=0.5, atol=degree_of_similarity, equal_nan=False)]
@@ -143,9 +143,7 @@ def interact_client(part):
     clientes.append([part,pp])
     cc2=np.arange(0,len(clients))[cc]
     pp2=np.arange(0,len(all))[pp]
-    coord_update=np.mean([coordinates[cc],coordinates[pp]],axis=0)
-    pos.update({part: coord_update})
-
+    pos.update({individuals[part]:np.mean([coordinates[cc2],coordinates[pp2]],axis=0)})
     return cellular_automaton(initial_condition)
 
 def interact_pros(part):
@@ -161,8 +159,7 @@ def interact_pros(part):
     profs.append([part,ccc])
     ccc2=np.arange(0,len(clients))[ccc]
     ppp2=np.arange(0,len(all))[ppp]
-    coord_update=np.mean([coordinates[ccc],coordinates[ppp]],axis=0)
-    pos.update({part: coord_update})
+    pos.update({individuals[part]:np.mean([coordinates[ccc2],coordinates[ppp2]],axis=0)})
     return cellular_automaton(initial_condition)
 
 
@@ -173,7 +170,7 @@ mean_pro=[]
 degree_c=[]
 closeness=[]
 
-iter=40
+iter=20
 iterations=iter
 
 
@@ -199,12 +196,10 @@ while iterations>0:
 
         # update nodes e edges restart graph
         edges=profs+clientes
-        #G = nx.Graph()
-        #G.add_nodes_from(nodes)
-        G.add_edges_from(edges)
-        #pos=dict(zip(individuals,coordinates))
-
-        
+        G.clear()
+        for u in range(0,len(all)):
+            G.add_node(all[u],pos=(list(pos.values())[u][0],list(pos.values())[u][1]))
+        G.add_edges_from(edges)        
         
         list_degree=list(G.degree())
         nodes , degree = map(list, zip(*list_degree))
@@ -287,6 +282,7 @@ while iterations>0:
         plt.savefig('/home/theone/Documents/MBA_output/foo{}.png'.format(time()))
         print(iterations)
         iterations=iterations-1
+        print(list(pos.values())[0])
     except:
         pass
 
