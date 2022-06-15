@@ -1,3 +1,5 @@
+;;Python configure /home/anaconda3/bin/python
+
 extensions [ py ]
 
 ;;turtles-own [
