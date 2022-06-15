@@ -16,7 +16,7 @@ globals [
 
 
 turtles-own [neighbor neighbor-state state similar-nearby 
-  nearest-neighbor total-nearby other-nearby similar-nearby2]
+  nearest-neighbor total-nearby other-nearby similar-nearby2 ]
 
 ;;links-own [weight]
 
@@ -69,13 +69,18 @@ to cellular_automata
            "    return final_state")
 
   let final-state py:runresult "cellular_automaton([a,b,c])"
+  set state final-state
 end
 
 
 
 to update-turtles
   ask turtles [
-    set similar-nearby n-of 2 turtles  with [ color = [ color ] of myself ]
+    
+    carefully[set similar-nearby n-of 2 turtles with [ color = [ color ] of myself ]]
+    [stop]
+    
+    
     set similar-nearby2 count (turtles-on neighbors)  with [ color = [ color ] of myself ]
     set total-nearby similar-nearby2 + other-nearby
     set neighbor n-of 2 similar-nearby
