@@ -5,24 +5,14 @@ globals [
                    ; are the same color as that turtle?
 ]
 
-;;to setup
-;;  clear-all
-;;  py:setup py:python
-;;  (py:run
-;;    "import numpy as np"
-;;    "import sklearn.cluster as cl"
-;;  )
-;;end
-
 
 turtles-own [neighbor neighbor-state state similar-nearby 
   nearest-neighbor total-nearby other-nearby similar-nearby2 ]
 
-;;links-own [weight]
 
 to setup
   ca
-  py:setup ;;"/home/anaconda/bin/python"
+  py:setup
   py:python3
   py:run "import numpy as np"
   py:run "import itertools"
@@ -31,22 +21,20 @@ to setup
   crt 200 [ setxy random-xcor random-ycor
     set shape "circle"
     set state one-of [False True]
-    set size 0.7
+    set size 0.5
+    set neighbor-state one-of [False True]
     ifelse state
       [set color green]
       [set color red]
   ]
-
-
-ask links [
-    set color white
-    ]
- repeat (count links) [ layout-spring turtles links 0.2 5 5 ]
   reset-ticks
-
 end
 
+
 to cellular_automata
+    py:set "a" neighbor-state
+    py:set "b" state
+    py:set "c" neighbor-state
     py:run "regra=30"
     py:run "base1=2"
     py:run "state=np.arange(0,base1)"
@@ -70,6 +58,11 @@ to cellular_automata
 
   let final-state py:runresult "cellular_automaton([a,b,c])"
   set state final-state
+    ifelse state = 0
+      [set color yellow]
+      [set color red]
+
+
 end
 
 
@@ -78,7 +71,8 @@ to update-turtles
   ask turtles [
     
     carefully[set similar-nearby n-of 2 turtles with [ color = [ color ] of myself ]]
-    [stop]
+    [find-new-spot
+      stop]
     
     
     set similar-nearby2 count (turtles-on neighbors)  with [ color = [ color ] of myself ]
@@ -86,28 +80,19 @@ to update-turtles
     set neighbor n-of 2 similar-nearby
 
     forward 0.5
-    create-links-with other neighbor
-    py:set "a" neighbor-state
-    py:set "b" state
-    py:set "c" neighbor-state
-
+    ;;create-links-with other neighbor
+   
     cellular_automata
 
-    ifelse state = 0
-      [set state 0 set color yellow]
-      [set state 1 set color red]
 
 
     ]
  
 end
-to move-unhappy-turtles
-  ask turtles with [ not similar-nearby ]
-    [ find-new-spot ]
-end
+
 to find-new-spot
-  rt random-float 360
-  fd random-float 10
+  rt random-float 180
+  fd random-float 30
   if any? other turtles-here [ find-new-spot ] ; keep going until we find an unoccupied patch
   move-to patch-here  ; move to center of patch
 end
