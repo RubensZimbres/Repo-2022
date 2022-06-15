@@ -1,5 +1,3 @@
-;;Python configure /home/anaconda3/bin/python
-
 extensions [ py ]
 
 ;;turtles-own [
@@ -24,7 +22,8 @@ turtles-own [neighbor state]
 
 to setup
   ca
-  py:setup py:python3
+  py:setup ;;"/home/anaconda/bin/python" 
+  py:python3
   py:run "import numpy as np"
   py:run "import itertools"
   py:run "import random"
@@ -53,6 +52,7 @@ end
 to cellular_automata
     py:run "regra=30"
     py:run "base1=2"
+    py:run "state=np.arange(0,base1)"
     (py:run "def cellular_automaton(kernel):"
            "    all_possible_states=np.array([p for p in itertools.product(state, repeat=3)])[::-1]"
            "    zeros_all_possible_states = np.zeros(all_possible_states.shape[0])"
@@ -71,7 +71,7 @@ to cellular_automata
            "    final_state=np.array(ca(0))"
            "    return final_state")
 
-    let final_state py:runresult "cellular_automaton(a,b,c)"
+  let final_state py:runresult "cellular_automaton([a,b,c])"
 end
 
 to go
@@ -81,7 +81,7 @@ to go
     py:set "b" 1
     py:set "c" 1
     
-    let result py:runresult "cellular_automaton(a, b,c)"
+    cellular_automata
     
     ifelse state = true
       [set state true set color yellow]
