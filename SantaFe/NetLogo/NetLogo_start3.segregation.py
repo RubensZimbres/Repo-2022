@@ -42,8 +42,6 @@ ask links [
     set color white
     ]
  repeat (count links) [ layout-spring turtles links 0.2 5 5 ]
-  update-turtles
-  update-globals
   reset-ticks
 
 end
@@ -73,12 +71,7 @@ to cellular_automata
   let final-state py:runresult "cellular_automaton([a,b,c])"
 end
 
-to go
-  ask turtles [
-    update-turtles
-  ]
-tick
-end
+
 
 to update-turtles
   ask turtles [
@@ -86,8 +79,6 @@ to update-turtles
     set similar-nearby2 count (turtles-on neighbors)  with [ color = [ color ] of myself ]
     set total-nearby similar-nearby2 + other-nearby
     set neighbor n-of 2 similar-nearby
-    ;;set neighbor-state random 2
-
 
     forward 0.5
     create-links-with other neighbor
@@ -122,6 +113,14 @@ to update-globals
 
   set percent-similar (similar-neighbors / total-neighbors) * 100
 end
+
+to go
+  update-turtles
+  update-globals
+  
+  tick
+end
+
 
 ;;to community-detection ;detect community using the louvain method
 ;;  color-clusters nw:louvain-communities
