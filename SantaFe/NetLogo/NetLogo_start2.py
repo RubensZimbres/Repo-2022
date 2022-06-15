@@ -16,7 +16,7 @@ extensions [ py ]
 
 ;;globals [ Cellular_Automata_Rule ] ;; wealth system
 
-turtles-own [neighbor state]
+turtles-own [neighbor neighbor-state state]
 
 ;;links-own [weight]
 
@@ -37,7 +37,7 @@ to setup
   ]
   ask turtles [ ;;edges
     set neighbor n-of 2 other turtles
-    set state random 2
+    set neighbor-state random 2
     create-links-with  other  neighbor
   ]
 
@@ -77,15 +77,15 @@ end
 to go
   ask turtles [
 
-    py:set "a" one-of [0 1]
-    py:set "b" one-of [0 1]
-    py:set "c" one-of [0 1]
+    py:set "a" neighbor-state
+    py:set "b" state
+    py:set "c" neighbor-state
 
     cellular_automata
 
-    ifelse state = true
-      [set state true set color yellow]
-      [set state false set color red]
+    ifelse state = 0
+      [set state 0 set color yellow]
+      [set state 1 set color red]
   ]
 tick
 end
