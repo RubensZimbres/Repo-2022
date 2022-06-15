@@ -76,10 +76,11 @@ to update-turtles
     
     
     set similar-nearby2 count (turtles-on neighbors)  with [ color = [ color ] of myself ]
+    
     set total-nearby similar-nearby2 + other-nearby
     set neighbor n-of 2 similar-nearby
 
-    forward 0.5
+    ;;forward 0.5
     ;;create-links-with other neighbor
    
     cellular_automata
@@ -93,7 +94,7 @@ end
 to find-new-spot
   rt random-float 180
   fd random-float 30
-  if any? other turtles-here [ find-new-spot ] ; keep going until we find an unoccupied patch
+  if any? other turtles-here [ find-new-spot ] ;
   move-to patch-here  ; move to center of patch
 end
 
