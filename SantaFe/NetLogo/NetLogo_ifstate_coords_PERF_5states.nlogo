@@ -52,6 +52,7 @@ to cellular_automata
            "    all_possible_states=np.array([p for p in itertools.product(state, repeat=3)])[::-1]"
            "    zeros_all_possible_states = np.zeros(all_possible_states.shape[0])"
            "    final_states = [int(i) for i in np.base_repr(int(regra),base=base1)]"
+           "    zeros_all_possible_states[-len(final_states):]=final_states"
            "    length_rules=np.array(range(0,len(zeros_all_possible_states)))"
            "    final_state_central_cell=[]"
            "    for i in range(0,len(zeros_all_possible_states)):"
