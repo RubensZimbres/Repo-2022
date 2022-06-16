@@ -125,19 +125,20 @@ set step (step + 1)
 
 end
 to move
-  if state = neighbor-left-state  [
-  facexy [xcor] of neighbor-left + 0.1
-         [ycor] of neighbor-left + 0.1
-  fd movement-speed
+  carefully[if state = neighbor-left-state  [
+  facexy ([xcor] of myself + [xcor] of neighbor-left) / 2
+         ([ycor] of myself + [ycor] of neighbor-left) / 2
+  fd movement-step
   if any? other turtles-here [ find-new-spot ]
 ]
 
   if state = neighbor-right-state  [
-  facexy [xcor] of neighbor-right + 0.1
-         [ycor] of neighbor-right + 0.1
-  fd movement-speed
+  facexy ([xcor] of myself + [xcor] of neighbor-right) / 2
+         ([ycor] of myself + [ycor] of neighbor-right) / 2
+  fd movement-step
   if any? other turtles-here [ find-new-spot ]
-]
+  ]]
+  [find-new-spot]
 
   if any? other turtles-here [ find-new-spot ]
 
@@ -145,8 +146,8 @@ to move
 end
 
 to find-new-spot
-  rt random-float movement-speed
-  fd random-float movement-speed
+  rt random-float movement-step
+  fd random-float movement-step
   if any? other turtles-here [ find-new-spot ]
   move-to patch-here  ; move to center of patch
 end
