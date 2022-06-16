@@ -162,5 +162,5 @@ end
 to go
   update-turtles
   update-globals
-  tick
+  
 end
