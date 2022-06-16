@@ -20,33 +20,29 @@ to setup
     set size 0.8
     set neighbor-left one-of other turtles in-radius minimum-separation
     set neighbor-right one-of other turtles in-radius minimum-separation
-    set state 0;2 3 4]
-    set neighbor-left-state one-of [0 1]; 2 3 4]
-    set neighbor-right-state one-of [0 1 ];2 3 4]
+    set state 0
+    set neighbor-left-state one-of [0 1]
+    set neighbor-right-state one-of [0 1]
 
     set size 1
     if state = 0 [set color red]
       if state = 1 [set color green]
-      ;  if state = 2 [set color yellow]
-       ;   if state = 3 [set color blue]
-        ;    if state = 4 [set color green]
+
   ]
+
   crt amount-turtles-1 [ setxy random-xcor random-ycor
 
     set shape "default"
     set size 0.8
     set neighbor-left one-of other turtles in-radius minimum-separation
     set neighbor-right one-of other turtles in-radius minimum-separation
-    set state 1;2 3 4]
-    set neighbor-left-state one-of [0 1]; 2 3 4]
-    set neighbor-right-state one-of [0 1 ];2 3 4]
+    set state 1
+    set neighbor-left-state one-of [0 1]
+    set neighbor-right-state one-of [0 1]
 
     set size 1
     if state = 0 [set color red]
       if state = 1 [set color green]
-      ;  if state = 2 [set color yellow]
-       ;   if state = 3 [set color blue]
-        ;    if state = 4 [set color green]
   ]
   reset-ticks
 end
@@ -55,21 +51,22 @@ end
 to cellular_automata
     py:setup
     py:python3
-    py:run "import numpy as np"
-    py:run "import itertools"
-    py:run "import random"
-    py:run "import collections"
     py:set "a" neighbor-left-state
     py:set "b" state
     py:set "c" neighbor-right-state
     py:set "rule" choose-CA-rule
     py:run "regra=rule"
     py:run "base1=2"
+    py:run "import numpy as np"
+    py:run "import itertools"
+    py:run "import random"
+    py:run "import collections"
     py:run "state=np.arange(0,base1)"
     (py:run "def cellular_automaton(kernel):"
            "    all_possible_states=np.array([p for p in itertools.product(state, repeat=3)])[::-1]"
            "    zeros_all_possible_states = np.zeros(all_possible_states.shape[0])"
            "    final_states = [int(i) for i in np.base_repr(int(regra),base=base1)]"
+           "    zeros_all_possible_states[-len(final_states):]=final_states"
            "    length_rules=np.array(range(0,len(zeros_all_possible_states)))"
            "    final_state_central_cell=[]"
            "    for i in range(0,len(zeros_all_possible_states)):"
@@ -88,9 +85,6 @@ to cellular_automata
   set state final-state
     if state = 0 [set color red]
       if state = 1 [set color green]
-      ;  if state = 2 [set color yellow]
-       ;   if state = 3 [set color blue]
-        ;    if state = 4 [set color green]
 
 end
 
@@ -129,17 +123,14 @@ to update-turtles
 set step (step + 1)
 
 end
-
 to move
-  ifelse state = 0 [
+  ;if state = 1 [
   facexy ([xcor] of neighbor-left + [xcor] of neighbor-right) / 2
          ([ycor] of neighbor-left + [ycor] of neighbor-right) / 2
-    fd movement-speed
-  if any? other turtles-here [ find-new-spot ]]
-  [  facexy [xcor] of neighbor-left + ([xcor] of neighbor-left - [xcor] of neighbor-right) / 2
-         [ycor] of neighbor-left + ([ycor] of neighbor-left - [ycor] of neighbor-right) / 2
-    fd movement-speed
-  if any? other turtles-here [ find-new-spot ]]
+  fd movement-speed
+  if any? other turtles-here [ find-new-spot ]
+;]
+ ; if any? other turtles-here [ find-new-spot ]
 
 
 end
@@ -161,7 +152,5 @@ end
 to go
   update-turtles
   update-globals
-
-
   tick
 end
