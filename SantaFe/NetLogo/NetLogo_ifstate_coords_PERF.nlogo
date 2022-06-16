@@ -12,12 +12,6 @@ turtles-own [neighbor-left neighbor-right neighbor-left-state neighbor-right-sta
 
 to setup
   ca
-  py:setup
-  py:python3
-  py:run "import numpy as np"
-  py:run "import itertools"
-  py:run "import random"
-  py:run "import collections"
   ask patches [set pcolor black]
 
   crt 200 [ setxy random-xcor random-ycor
@@ -42,6 +36,12 @@ end
 
 
 to cellular_automata
+    py:setup
+    py:python3
+    py:run "import numpy as np"
+    py:run "import itertools"
+    py:run "import random"
+    py:run "import collections"
     py:set "a" neighbor-left-state
     py:set "b" state
     py:set "c" neighbor-right-state
