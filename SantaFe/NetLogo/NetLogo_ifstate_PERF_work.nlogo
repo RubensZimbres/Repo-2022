@@ -14,13 +14,30 @@ to setup
   ca
   ask patches [set pcolor black]
 
-  crt amount-turtles [ setxy random-xcor random-ycor
+  crt amount-turtles-0 [ setxy random-xcor random-ycor
 
     set shape "default"
     set size 0.8
     set neighbor-left one-of other turtles in-radius minimum-separation
     set neighbor-right one-of other turtles in-radius minimum-separation
-    set state one-of [0 1 ];2 3 4]
+    set state 0;2 3 4]
+    set neighbor-left-state one-of [0 1]; 2 3 4]
+    set neighbor-right-state one-of [0 1 ];2 3 4]
+
+    set size 1
+    if state = 0 [set color red]
+      if state = 1 [set color green]
+      ;  if state = 2 [set color yellow]
+       ;   if state = 3 [set color blue]
+        ;    if state = 4 [set color green]
+  ]
+  crt amount-turtles-1 [ setxy random-xcor random-ycor
+
+    set shape "default"
+    set size 0.8
+    set neighbor-left one-of other turtles in-radius minimum-separation
+    set neighbor-right one-of other turtles in-radius minimum-separation
+    set state 1;2 3 4]
     set neighbor-left-state one-of [0 1]; 2 3 4]
     set neighbor-right-state one-of [0 1 ];2 3 4]
 
