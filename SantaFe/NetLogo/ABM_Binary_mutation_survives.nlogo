@@ -46,6 +46,9 @@ to setup
     if state = 0 [ set color red ]
       if state = 1 [ set color green ]
   ]
+    py:setup
+    py:python3
+
   reset-ticks
 
   ;set population amount-turtles-happy + amount-turtles-unhappy
@@ -63,8 +66,6 @@ end
 
 
 to cellular_automata
-    py:setup
-    py:python3
     py:set "a" neighbor-left-state
     py:set "b" state
     py:set "c" neighbor-right-state
