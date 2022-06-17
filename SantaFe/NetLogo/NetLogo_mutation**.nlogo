@@ -46,24 +46,26 @@ to setup
     if state = 0 [ set color red ]
       if state = 1 [ set color green ]
   ]
+    py:setup
+    py:python3
+
   reset-ticks
 
-  set population amount-turtles-happy + amount-turtles-unhappy
-  set individuals-mutate int(population * mutation-rate)
+  ;set population amount-turtles-happy + amount-turtles-unhappy
+  ;set individuals-mutate int(population * mutation-rate)
 end
 
 
 to mutate
-  let dice population
-  ask n-of individuals-mutate turtles [
-    set state 1
-  ]
+
+  carefully[ask n-of mutated turtles with [state = 0]
+   [ set state 1
+  ]]
+  [stop]
 end
 
 
 to cellular_automata
-    py:setup
-    py:python3
     py:set "a" neighbor-left-state
     py:set "b" state
     py:set "c" neighbor-right-state
