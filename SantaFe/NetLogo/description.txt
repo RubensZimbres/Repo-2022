@@ -1,0 +1,121 @@
+## WHAT IS IT?
+
+The origin of this project was in my doctorate, when I used cellular automata to simulate human interactions that happened in the real world. I started with a market research with real people in two different times: one at time zero and the second at time zero plus 4 months (longitudinal market research). 
+
+The idea was to develop an agent-based model whose initial condition was inherited from the results of the first market research response values and evolve it to simulate human interactions that led to the values of the second market research, without explicitly imposing rules. Then, compare results of the model with the second market research.
+
+In the same way, this project models the behavior of individuals in a closed society whose behavior depend upon the result of interaction with two neighbors, one on the "right" and one on the "left". States here are defined as a quality perception, where red means unhappy and green means happy, a good quality perception.
+
+
+## HOW IT WORKS
+
+The system is modelled using one of the 256 two-states one-dimensional cellular automaton (CA) rules available. The behavior of an agent is defined by the type of neighbors he/she has at time t. So, at time t+1 the states of all agents that interacted with two neighbors are updated. 
+
+Initialization
+
+The system is initialized choosing:
+- the CELLULAR AUTOMATON RULE (choose-CA-rule) - from 0 to 255 
+- the amount of turtles with value 0 (red - UNHAPPY) and the amount of turtles with value 1 (green - HAPPY). 
+- the MINIMUM_SEPARATION variable helps the agent to decide the radius in which neighbors will be chosen. 
+- the MOVEMENT-STEP variable defines how much should an agent move in case there are not neighbors available inside the radius defined in Setup.
+
+Iterative
+
+The agents will randomly choose their left and right neighbors. In case there are not two neighbors within the radius defined in MINIMUM-SEPARATION, they will move MOVEMENT-STEPs until they find two available neigbors. In this movement, relative radius is updated. As soon as they find two neighbors, they update their state according to the colors of each one of the neighbors, following the transition table of the chosen CA rule, available at:
+
+https://www.wolframalpha.com/input/?i=cellular+automaton+rule+30
+
+Cellular automaton was developed using the Python extension for NetLogo and in fact is able to support rules with 2 to 5 states.
+
+Initially turtles looks for two of other turles inside their defined radius. If he/she does not find exactly two neighbors, he/she finds a new spot. When neighbors are available, cellular automata rule is applied to all turtles who has the available neighbors. If the turtle tries to move to a spot already occupied by another turtle, he/she moves again until they are available.
+
+## HOW TO USE IT
+
+Click the SETUP button to set up the agents. There are approximately equal numbers of orange and blue agents. The agents are set up so no patch has more than one agent.  Click GO to start the simulation. If agents don't have enough neighbors in the radius of interaction, they move to a nearby patch. (Note that the topology is not wrapping).
+
+---------------
+The % SIMILAR monitor shows the average percentage of same-color neighbors for each agent. It starts at about 50%, since each agent starts (on average) with an equal number of orange and blue agents as neighbors. The NUM-UNHAPPY monitor shows the number of unhappy agents, and the % UNHAPPY monitor shows the percent of agents that have fewer same-color neighbors than they want (and thus want to move). The % SIMILAR and the NUM-UNHAPPY monitors are also plotted.
+-------------------
+
+## THINGS TO NOTICE
+
+When you execute SETUP, the red and green agents are randomly distributed throughout the neighborhood. 
+
+
+But many agents are "unhappy" since their interactions with neighbors may result in unhappiness. The unhappy agents move to new locations in the vicinity. But in the new locations, they may alter the equilibrium of the local population, prompting other agents to leave.
+
+
+## THINGS TO TRY
+
+Try different values for %-SIMILAR-WANTED. How does the overall degree of segregation change?
+
+If each agent wants at least 40% same-color neighbors, what percentage (on average) do they end up with?
+
+Try different values of DENSITY. How does the initial occupancy density affect the percentage of unhappy agents? How does it affect the time it takes for the model to finish?
+
+Can you set sliders so that the model never finishes running, and agents keep looking for new locations?
+
+## EXTENDING THE MODEL
+
+The `find-new-spot` procedure has the agents move locally till they find a spot. Can you rewrite this procedure so the agents move directly to an appropriate new spot?
+
+Incorporate social networks into this model.  For instance, have unhappy agents decide on a new location based on information about what a neighborhood is like from other agents in their network.
+
+Change the rules for agent happiness.  One idea: suppose that the agents need some minimum threshold of "good neighbors" to be happy with their location.  Suppose further that they don't always know if someone makes a good neighbor. When they do, they use that information.  When they don't, they use color as a proxy -- i.e., they assume that agents of the same color make good neighbors.
+
+The two different visualizations emphasize different aspects of the model. The SQUARE-X visualization shows whether an agent is happy or not. Can you design a different visualization that emphasizes different aspects?
+
+## NETLOGO FEATURES
+
+`sprout` is used to create agents while ensuring no patch has more than one agent on it.
+
+When an agent moves, `move-to` is used to move the agent to the center of the patch it eventually finds.
+
+Note two different methods that can be used for find-new-spot, one of them (the one we use) is recursive.
+
+## REFERENCES
+
+Axelrod, R. (1997). Advancing the Art of Simulation in the Social Sciences. Handbook of Research on Nature Inspired Computing for Economy and Management, Jean-Philippe Rennard (Ed.).Hersey, PA: Idea Group.
+
+Axelrod, R. (1997). Complexity of cooperation. New Jersey: Princeton University Press, 1997.
+
+Bertalanffy, L. (1950). An Outline of General System Theory. British Journal of the Philosophy of Science, 1950
+
+Flache, A. Hegselmann, R. (2001). Do Irregular Grids make a Difference? Relaxing the Spatial Regularity Assumption in Cellular Models of Social Dynamics. Journal of Artificial Societies and Social Simulation, v. 4, n. 4.
+
+Ganguly, N.; Sikdar, B.K.; Deutch, A.; Canright, G.; Chaudhuri, P.P. A survey on cellular automata. Available at www.cs.unibo.it/bison/publications/CAsurvey.pdf.
+
+Macy, M.W.; Willer, R. (2002). From factors to actors: Computational sociology and agent-
+based modeling. Annual Review of Sociology, v. 28.
+
+Sawyer, R.K. (2003). Artificial societies: Multiagent systems and the micro-macro link in
+sociological theory. Sociological Methods and Research, v. 31, n. 3, Feb 2003.
+
+Sawyer, R.K. (2004). Social explanation and computational simulation. Philosophical
+explorations, v. 7, n. 3.
+
+Schelling, T. (1978). Micromotives and Macrobehavior. New York: Norton.
+
+Wolfram, S. (2002). A new kind of science. Canada: Wolfram Media Inc.
+
+
+
+## HOW TO CITE
+
+If you mention this model or the NetLogo software in a publication, we ask that you include the citations below.
+
+For the model itself:
+* Zimbres, R.A., Oliveira, P.P.B. (2009). Dynamics of Quality Perception in a Social Network: A Cellular Automaton Based Model in Aesthetics Services. Electronic Notes in Theoretical Computer Science. Volume 252, 1, Pages 157–180.
+
+Please cite the NetLogo software as:
+
+* Wilensky, U. (1999). NetLogo. http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
+
+
+## COPYRIGHT AND LICENSE
+
+Copyright of NetLogo - 1997 Uri Wilensky.
+
+![CC BY-NC-SA 3.0](http://ccl.northwestern.edu/images/creativecommons/byncsa.png)
+
+<!-- 1997 2001 -->
