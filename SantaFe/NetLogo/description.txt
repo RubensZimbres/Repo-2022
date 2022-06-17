@@ -9,7 +9,7 @@ In the same way, this project models the behavior of individuals in a closed soc
 
 ## HOW IT WORKS
 
-The system is modelled using one of the 256 two-states one-dimensional cellular automaton (CA) rules available. The behavior of an agent is defined by the type of neighbors he/she has at time t. So, at time t+1 the states of all agents that interacted with two neighbors are updated. 
+The system is modelled using one of the 256 two-states one-dimensional cellular automaton (CA) rules available. An amorphous cellular automaton. The behavior of an agent is defined by the type of neighbors he/she has at time t. So, at time t+1 the states of all agents that interacted with two neighbors are updated. 
 
 Initialization
 
