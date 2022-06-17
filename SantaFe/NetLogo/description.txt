@@ -19,11 +19,26 @@ The system is initialized choosing:
 - the MINIMUM_SEPARATION variable helps the agent to decide the radius in which neighbors will be chosen. 
 - the MOVEMENT-STEP variable defines how much should an agent move in case there are not neighbors available inside the radius defined in Setup.
 
+
 Iterative
 
 The agents will randomly choose their left and right neighbors. In case there are not two neighbors within the radius defined in MINIMUM-SEPARATION, they will move MOVEMENT-STEPs until they find two available neigbors. In this movement, relative radius is updated. As soon as they find two neighbors, they update their state according to the colors of each one of the neighbors, following the transition table of the chosen CA rule, available at:
 
 https://www.wolframalpha.com/input/?i=cellular+automaton+rule+30
+
+Cellular Automata principle: for each cell in the grid with its position c(i,j) where i and j are the row and the column respectively, a function Sc(t)=S(t;i,j) is associated with the lattice to describe the cell c state in time t. So, in a time t+1, state S(t+1,i,j) is given by:
+
+S(t+1;i, j ) = [S(t;i,j)+δ]mod k
+
+where − k ≤ δ ≤ k and k is the number of cell c states. The formula for δ is:
+
+δ = μ if condition (a) is true
+
+δ = -S(t;i,j) if condition (b) is true
+
+δ = 0 otherwise
+
+where a and b change according to the rule.
 
 Cellular automaton was developed using the Python extension for NetLogo and in fact is able to support rules with 2 to 5 states.
 
@@ -51,7 +66,9 @@ Notice the emergence of ........
 
 Incorporate social networks into this model.  For instance, have unhappy agents decide on a new location based on information about the other communities, like betweeness centrality, closeness of agents, etc.
 
-Change the rules for agent happiness.  Find the perfect setup of happiness.
+Change the rules for agent happiness. With 2 states, you have 256 possible rules. With 5 states, you have 2350988701644575015937473074444491355637331113544175043017503412556834518909454345703125 possible rules. The biggest issue here is to know which will be the outcome for a chosen rule. 
+
+Find the perfect setup for the rapid emergence of happiness and a good quality perception.
 
 
 ## REFERENCES
