@@ -48,16 +48,17 @@ to setup
   ]
   reset-ticks
 
-  set population amount-turtles-happy + amount-turtles-unhappy
-  set individuals-mutate int(population * mutation-rate)  
+  ;set population amount-turtles-happy + amount-turtles-unhappy
+  ;set individuals-mutate int(population * mutation-rate)
 end
 
 
 to mutate
-  ask turtles [ let dice population
-                set state turtles-on dice with [ state = 1 ]              
-  ]
   
+  carefully[ask n-of mutated turtles with [state = 0]
+   [ set state 1
+  ]]
+  [stop]
 end
 
 
@@ -123,6 +124,10 @@ to update-turtles
     ]
 
     mutate
+    if xcor > 16 [die]
+    if xcor < -16 [die]
+    if ycor > 16 [die]
+    if ycor < -16 [die]
 
 ]
   set counter counter + 1
@@ -148,4 +153,3 @@ to go
   update-globals
 
 end
-
