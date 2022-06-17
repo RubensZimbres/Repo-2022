@@ -47,7 +47,7 @@ Initially turtles looks for two of other turles inside their defined radius. If 
 
 ## HOW TO USE IT
 
-Click the SETUP button to set up the agents. There are approximately equal numbers of orange and blue agents. The agents are set up so no patch has more than one agent.  Click GO to start the simulation. If agents don't have enough neighbors in the radius of interaction, they move to a nearby patch. (Note that the topology is not wrapping).
+Click the SETUP button to set up the agents. There are approximately equal numbers of red and green agents, but you can change it. The agents are set up so no patch has more than one agent.  Click GO to start the simulation. If agents don't have enough neighbors in the radius of interaction, they move to a nearby patch. (Note that the topology is not wrapping).
 
 
 ## THINGS TO NOTICE
@@ -60,7 +60,7 @@ Notice the emergence of ........
 
 ## THINGS TO TRY
 
---Develop
+Try to alter the amount of movement the agent does when he is unhappy or with few neighbors. You can also change the radius an agent will consider when interating with others. Does a small radius isolate him/her in the social dynamics ?
 
 ## EXTENDING THE MODEL
 
