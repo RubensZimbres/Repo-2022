@@ -29,49 +29,30 @@ Cellular automaton was developed using the Python extension for NetLogo and in f
 
 Initially turtles looks for two of other turles inside their defined radius. If he/she does not find exactly two neighbors, he/she finds a new spot. When neighbors are available, cellular automata rule is applied to all turtles who has the available neighbors. If the turtle tries to move to a spot already occupied by another turtle, he/she moves again until they are available.
 
+
 ## HOW TO USE IT
 
 Click the SETUP button to set up the agents. There are approximately equal numbers of orange and blue agents. The agents are set up so no patch has more than one agent.  Click GO to start the simulation. If agents don't have enough neighbors in the radius of interaction, they move to a nearby patch. (Note that the topology is not wrapping).
 
----------------
-The % SIMILAR monitor shows the average percentage of same-color neighbors for each agent. It starts at about 50%, since each agent starts (on average) with an equal number of orange and blue agents as neighbors. The NUM-UNHAPPY monitor shows the number of unhappy agents, and the % UNHAPPY monitor shows the percent of agents that have fewer same-color neighbors than they want (and thus want to move). The % SIMILAR and the NUM-UNHAPPY monitors are also plotted.
--------------------
 
 ## THINGS TO NOTICE
 
 When you execute SETUP, the red and green agents are randomly distributed throughout the neighborhood. 
 
-
 But many agents are "unhappy" since their interactions with neighbors may result in unhappiness. The unhappy agents move to new locations in the vicinity. But in the new locations, they may alter the equilibrium of the local population, prompting other agents to leave.
 
+Notice the emergence of ........
 
 ## THINGS TO TRY
 
-Try different values for %-SIMILAR-WANTED. How does the overall degree of segregation change?
-
-If each agent wants at least 40% same-color neighbors, what percentage (on average) do they end up with?
-
-Try different values of DENSITY. How does the initial occupancy density affect the percentage of unhappy agents? How does it affect the time it takes for the model to finish?
-
-Can you set sliders so that the model never finishes running, and agents keep looking for new locations?
+--Develop
 
 ## EXTENDING THE MODEL
 
-The `find-new-spot` procedure has the agents move locally till they find a spot. Can you rewrite this procedure so the agents move directly to an appropriate new spot?
+Incorporate social networks into this model.  For instance, have unhappy agents decide on a new location based on information about the other communities, like betweeness centrality, closeness of agents, etc.
 
-Incorporate social networks into this model.  For instance, have unhappy agents decide on a new location based on information about what a neighborhood is like from other agents in their network.
+Change the rules for agent happiness.  Find the perfect setup of happiness.
 
-Change the rules for agent happiness.  One idea: suppose that the agents need some minimum threshold of "good neighbors" to be happy with their location.  Suppose further that they don't always know if someone makes a good neighbor. When they do, they use that information.  When they don't, they use color as a proxy -- i.e., they assume that agents of the same color make good neighbors.
-
-The two different visualizations emphasize different aspects of the model. The SQUARE-X visualization shows whether an agent is happy or not. Can you design a different visualization that emphasizes different aspects?
-
-## NETLOGO FEATURES
-
-`sprout` is used to create agents while ensuring no patch has more than one agent on it.
-
-When an agent moves, `move-to` is used to move the agent to the center of the patch it eventually finds.
-
-Note two different methods that can be used for find-new-spot, one of them (the one we use) is recursive.
 
 ## REFERENCES
 
@@ -105,6 +86,7 @@ Wolfram, S. (2002). A new kind of science. Canada: Wolfram Media Inc.
 If you mention this model or the NetLogo software in a publication, we ask that you include the citations below.
 
 For the model itself:
+
 * Zimbres, R.A., Oliveira, P.P.B. (2009). Dynamics of Quality Perception in a Social Network: A Cellular Automaton Based Model in Aesthetics Services. Electronic Notes in Theoretical Computer Science. Volume 252, 1, Pages 157–180.
 
 Please cite the NetLogo software as:
