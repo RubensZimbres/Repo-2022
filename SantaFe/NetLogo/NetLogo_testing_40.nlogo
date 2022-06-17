@@ -1,7 +1,7 @@
 extensions [ py nw]
 
 globals [
-  percent-similar  
+  percent-similar
   ticks-to-run
 ]
 
@@ -12,40 +12,39 @@ turtles-own [neighbor-left neighbor-right neighbor-left-state neighbor-right-sta
 
 to setup
   ca
-  ask patches [set pcolor black]
+  ask patches [ set pcolor black ]
 
-  crt amount-turtles-0 [ setxy random-xcor random-ycor
+  crt amount-turtles-unhappy [ setxy random-xcor random-ycor
 
     set shape "default"
     set size 0.8
-    set neighbor-left one-of other turtles in-radius minimum-separation
-    set neighbor-right one-of other turtles in-radius minimum-separation
+    set neighbor-left one-of other turtles in-radius radius-of-interaction
+    set neighbor-right one-of other turtles in-radius radius-of-interaction
     set state 0
-    set neighbor-left-state one-of [0 1]
-    set neighbor-right-state one-of [0 1]
+    set neighbor-left-state one-of [ 0 1 ]
+    set neighbor-right-state one-of [ 0 1 ]
 
     set size 1
-    if state = 0 [set color red]
-      if state = 1 [set color green]
+    if state = 0 [ set color red ]
+      if state = 1 [ set color green ]
 
   ]
 
-  crt amount-turtles-1 [ setxy random-xcor random-ycor
+  crt amount-turtles-happy [ setxy random-xcor random-ycor
 
     set shape "default"
     set size 0.8
-    set neighbor-left one-of other turtles in-radius minimum-separation
-    set neighbor-right one-of other turtles in-radius minimum-separation
+    set neighbor-left one-of other turtles in-radius radius-of-interaction
+    set neighbor-right one-of other turtles in-radius radius-of-interaction
     set state 1
-    set neighbor-left-state one-of [0 1]
-    set neighbor-right-state one-of [0 1]
+    set neighbor-left-state one-of [ 0 1 ]
+    set neighbor-right-state one-of [ 0 1 ]
 
     set size 1
-    if state = 0 [set color red]
-      if state = 1 [set color green]
+    if state = 0 [ set color red ]
+      if state = 1 [ set color green ]
   ]
   reset-ticks
-  set ticks-to-run epochs
 end
 
 
@@ -55,7 +54,7 @@ to cellular_automata
     py:set "a" neighbor-left-state
     py:set "b" state
     py:set "c" neighbor-right-state
-    py:set "rule" choose-CA-rule
+    py:set "rule" Cellular-Automaton-rule
     py:run "regra=rule"
     py:run "base1=2"
     py:run "import numpy as np"
@@ -84,8 +83,8 @@ to cellular_automata
 
   let final-state py:runresult "cellular_automaton([a,b,c])[0]"
   set state final-state
-    if state = 0 [set color red]
-      if state = 1 [set color green]
+    if state = 0 [ set color red ]
+      if state = 1 [ set color green ]
 
 end
 
@@ -94,60 +93,32 @@ end
 to update-turtles
   let step 0
   ask turtles [
-    ifelse state = 0 [
-    carefully[set neighbor-left one-of other turtles in-radius minimum-separation ]
-    [find-new-spot
+    
+    carefully[ set neighbor-left one-of other turtles in-radius radius-of-interaction ]
+    [ find-new-spot
       stop]
-    carefully[set neighbor-right one-of other turtles in-radius minimum-separation ]
-    [find-new-spot
+    carefully[ set neighbor-right one-of other turtles in-radius radius-of-interaction ]
+    [ find-new-spot
     stop]
-    ]
-    [carefully[set neighbor-left one-of other turtles ]
-    [find-new-spot
-      stop]
-    carefully[set neighbor-right one-of other turtles  ]
-    [find-new-spot
-    stop]
-
-
-    ]
-    set similar-nearby count (turtles-on neighbors) in-radius minimum-separation
+    
+    set similar-nearby count ( turtles-on neighbors ) in-radius radius-of-interaction
 
     set total-nearby similar-nearby + other-nearby
 
     cellular_automata
-      if similar-nearby < 2
-    [find-new-spot
+      if state = 0
+    [ find-new-spot
     ]
-    move
+
+
 ]
 set step (step + 1)
 
 end
-to move
-  carefully[if state = neighbor-left-state  [
-  facexy ([xcor] of myself + [xcor] of neighbor-left) / 2
-         ([ycor] of myself + [ycor] of neighbor-left) / 2
-  fd movement-step
-  if any? other turtles-here [ find-new-spot ]
-]
-
-  if state = neighbor-right-state  [
-  facexy ([xcor] of myself + [xcor] of neighbor-right) / 2
-         ([ycor] of myself + [ycor] of neighbor-right) / 2
-  fd movement-step
-  if any? other turtles-here [ find-new-spot ]
-  ]]
-  [find-new-spot]
-
-  if any? other turtles-here [ find-new-spot ]
-
-
-end
 
 to find-new-spot
-  rt random-float movement-step
-  fd random-float movement-step
+  rt random-float movement-steps
+  fd random-float movement-steps
   if any? other turtles-here [ find-new-spot ]
   move-to patch-here  ; move to center of patch
 end
@@ -156,11 +127,11 @@ to update-globals
   let similar-neighbors sum [ similar-nearby ] of turtles
   let total-neighbors sum [ total-nearby ] of turtles
 
-  set percent-similar (similar-neighbors / total-neighbors) * 100
+  set percent-similar ( similar-neighbors / total-neighbors ) * 100
 end
 
 to go
   update-turtles
   update-globals
-  
+
 end
