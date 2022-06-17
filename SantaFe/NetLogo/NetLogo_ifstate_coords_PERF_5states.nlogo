@@ -31,13 +31,14 @@ to setup
           if state = 3 [set color blue]
             if state = 4 [set color green]
   ]
+    py:setup
+    py:python3
+
   reset-ticks
 end
 
 
 to cellular_automata
-    py:setup
-    py:python3
     py:run "import numpy as np"
     py:run "import itertools"
     py:run "import random"
