@@ -11,6 +11,8 @@ This folder has the python code to create Agent-Based Models based in 2 and 5 st
 
 <img src=https://github.com/RubensZimbres/Repo-2022/blob/main/png/MBA_github_noise_movie.gif>
 
+<img src=https://github.com/RubensZimbres/Repo-2022/blob/main/SantaFe/NetLogo/NETLOGO_28.png>
+
 <b>Tensorflow Hub</b>  
 This folder has the code to generate word embeddings using BERT multilingual model from Tensorflow Hub, in the shape (2,768).  
   
