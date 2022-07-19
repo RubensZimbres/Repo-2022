@@ -1,0 +1,47 @@
+https://medium.com/@biancalorenpadilla/sftp-google-cloud-storage-d559fd16e074  
+https://www.techrepublic.com/article/how-to-restrict-server-users-to-a-specific-directory-in-linux/  
+
+sudo adduser username
+
+sudo passwd username
+
+sudo groupadd restricted
+
+sudo usermod -g restricted username
+
+sudo vi /etc/ssh/sshd_config
+
+Look for the line (near the bottom):
+
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+Change that line to:
+
+Subsystem sftp internal-sftp
+
+ListenAddress 0.0.0.0
+
+# GSSAPI options
+#GSSAPIAuthentication yes
+GSSAPICleanupCredentials no
+#GSSAPIStrictAcceptorCheck yes
+#GSSAPIKeyExchange no
+#GSSAPIEnablek5users no
+
+At the bottom of the file, add the following:
+
+Match group restricted
+ChrootDirectory /home/username
+ForceCommand internal-sftp
+AllowTcpForwarding no
+X11Forwarding no
+
+Save and close the file. Restart SSH with:
+
+sudo systemctl restart sshd
+
+Restart machine
+
+External Machine
+
+Cyberduck - Filezilla
