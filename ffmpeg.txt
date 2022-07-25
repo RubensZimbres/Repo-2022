@@ -1,0 +1,1 @@
+ffmpeg -i normalmente_best.mp4 -vf fps=25 ./anotacao/normal_%04d.jpeg
