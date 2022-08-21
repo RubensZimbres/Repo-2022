@@ -9,18 +9,16 @@
     </head>
 
   <body>
-    <h1>Plotting a histogram of Standard Normal distribution</h1>
+    <h1>Histogram</h1>
     <div id="plot"></div>
     <py-script output="plot">
 import matplotlib.pyplot as plt
 import numpy as np
 
-np.random.seed(42)
-
-rv = np.random.standard_normal(1000)
+distrib = np.random.standard_normal(1000)
 
 fig, ax = plt.subplots()
-ax.hist(rv, bins=30)
+ax.hist(distrib, bins=8)
 fig
 
     </py-script>
