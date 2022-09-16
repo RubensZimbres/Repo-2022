@@ -1,0 +1,6 @@
+CREATE OR REPLACE TABLE `project.dataset.tabela-tese` AS
+SELECT
+  * EXCEPT (selected),
+  CAST(selected AS STRING) AS selected
+FROM
+  `project.dataset.tabela-tese`;
