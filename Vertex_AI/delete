@@ -1,0 +1,5 @@
+gcloud ai endpoints describe 123 --region=us-central1
+
+gcloud ai endpoints undeploy-model 123  --project=abc-teste --region=us-central1 --deployed-model-id=223344
+
+gcloud ai endpoints delete 123  --project=abc-teste --region=us-central1
