@@ -413,18 +413,9 @@ for i in range(0,1633):
 
 #query=np.sum([model.user_model(tf.constant(campos.split()[i])) for i in range(0,len(campos.split()))],axis=0)
 
-'''BEST SHORT & LONG searcher = scann.scann_ops_pybind.builder(np.array(indice), 10, "dot_product").tree(
-    num_leaves=1500, num_leaves_to_search=500, training_sample_size=df.shape[0]).score_ah(
-    2, anisotropic_quantization_threshold=0.2).reorder(100).build()
-'''
-
-''' BEST searcher = scann.scann_ops_pybind.builder(np.array(indice), 10, "dot_product").tree(
-    num_leaves=500, num_leaves_to_search=50, training_sample_size=df.shape[0]).score_ah(
-    2, anisotropic_quantization_threshold=0.2).reorder(100).build()'''
-
 searcher = scann.scann_ops_pybind.builder(np.array(indice), 10, "dot_product").tree(
-    num_leaves=500, num_leaves_to_search=50, training_sample_size=df.shape[0]).score_ah(
-    2, anisotropic_quantization_threshold=0.2).reorder(100).build()
+    num_leaves=1500, num_leaves_to_search=500, training_sample_size=df.shape[0]).score_brute_force(
+    2, quantize=True).build()
 
 def predict(text):
     campos=str(text).lower()
@@ -438,9 +429,9 @@ predict("Spanish Colombia Bogota experience call center sales administrative wor
 
 predict("Spanish Colombia Bogota experience secretary administrative work")
 
-predict("Spanish Colombia Bogota experience human resources assistant") #ESCO
+predict("Spanish Colombia Bogota experience human resources assistant recruiting") #ESCO
 
-#predict("Spanish Colombia Bogota experience human resources assistant document interviews use communication techniques employment law") #ESCO
+predict("Spanish Colombia Bogota experience human resources assistant document interviews use communication techniques employment law") #ESCO
 
 
 predict([ i for i in word_tokenize('''Spanish Colombia Bogota experience processing customer cash deposits and withdrawals, cheques, transfers, bills, credit card payments, money orders, certified cheques and other related banking transactions;
