@@ -1,0 +1,6 @@
+sudo ufw reset
+sudo ufw default deny incoming
+sudo ufw default deny outgoing
+sudo ufw deny 1:65500/udp
+sudo ufw enable
+sudo service ufw restart
